@@ -115,7 +115,10 @@ jobs:
           compression-level: 9
 
   push_to_canary_group:
-    if: |
+    # Disabled in fork: upstream pushes to a Telegram channel via BOT_TOKEN /
+    # CHANNEL_ID secrets that this fork does not have. The build artifact is
+    # available via "Upload APKs" in the build_app job instead.
+    if: false &&
       github.event_name == 'push' &&
       github.ref == 'refs/heads/main' &&
       github.ref_type != 'tag' &&
@@ -324,7 +327,8 @@ jobs:
             --form-string caption="${CAPTION}"
 
   push_to_debug_group:
-    if: |
+    # Disabled in fork — same reason as push_to_canary_group above.
+    if: false &&
       github.event_name == 'pull_request' &&
       (
         startsWith(github.event.head_commit.message, 'app: update version ')
