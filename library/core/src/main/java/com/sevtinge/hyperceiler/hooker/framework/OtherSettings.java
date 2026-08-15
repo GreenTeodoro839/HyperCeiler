@@ -18,6 +18,7 @@
  */
 package com.sevtinge.hyperceiler.hooker.framework;
 
+import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreHyperOSVersion;
 import static com.sevtinge.hyperceiler.sub.SubPickerActivity.APP_OPEN_MODE;
 import static com.sevtinge.hyperceiler.sub.SubPickerActivity.LAUNCHER_MODE;
 import static com.sevtinge.hyperceiler.sub.SubPickerActivity.PROCESS_TEXT_MODE;
@@ -58,6 +59,13 @@ public class OtherSettings extends DashboardFragment {
         mAutoStart = findPreference("prefs_key_system_framework_auto_start_apps");
         mClipboardWhitelistApps = findPreference("prefs_key_system_framework_clipboard_whitelist_apps");
         mVerifyDisable = findPreference("prefs_key_system_framework_disable_verify_can_ve_disabled");
+
+        if (isMoreHyperOSVersion(4f)) {
+            // HyperOS 4: WifiService 已移出 system_server，防蹭网检测失效；
+            // ThermalManagerService 迁移至 power.thermal 且接口重构，禁用温控无法适配
+            setPreVisible(findPreference("prefs_key_system_settings_anti_ques"), false);
+            setPreVisible(findPreference("prefs_key_system_framework_other_disable_thermal"), false);
+        }
 
         mAutoStart.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(getActivity(), SubPickerActivity.class);
