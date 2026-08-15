@@ -88,7 +88,7 @@ import com.sevtinge.hyperceiler.libhook.rules.systemframework.volume.VolumeFirst
 import com.sevtinge.hyperceiler.libhook.rules.systemframework.volume.VolumeMediaSteps;
 import com.sevtinge.hyperceiler.libhook.rules.systemframework.volume.VolumeSteps;
 
-@HookBase(targetPackage = "system", minSdk = 36)
+@HookBase(targetPackage = "system", minSdk = 37)
 public class SystemFrameworkB extends BaseLoad {
 
     @Override

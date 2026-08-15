@@ -106,7 +106,7 @@ import com.sevtinge.hyperceiler.libhook.utils.hookapi.systemui.controlcenter.Med
 
 import java.util.Objects;
 
-@HookBase(targetPackage = "com.android.systemui", minSdk = 36)
+@HookBase(targetPackage = "com.android.systemui", minSdk = 37)
 public class SystemUIB extends BaseLoad {
 
 
