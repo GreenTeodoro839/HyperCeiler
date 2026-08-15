@@ -38,7 +38,6 @@ import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getStaticBooleanField
 import java.io.File
 import java.nio.charset.Charset
 import java.util.Locale
-import kotlin.math.abs
 import kotlin.math.roundToInt
 
 /**
@@ -245,23 +244,15 @@ object DeviceHelper {
                 }
             }
 
-            fun matchesSmallVersion(other: Float): Boolean {
-                return abs(smallVersion - other) < 0.001f
+            fun matchesHyperOSVersion(other: Float): Boolean {
+                return hyperOSVersion == other
             }
         }
 
         private val versionList: List<VersionInfo> by lazy {
             listOf(
                 // 已完全适配
-                VersionInfo(35, 3.0f, 3.0f, SUPPORT_FULL),
-                VersionInfo(36, 3.0f, 3.0f, SUPPORT_FULL),
-                VersionInfo(36, 3.0f, 3.3f, SUPPORT_FULL),
-
-                // 部分功能未适配
-                // VersionInfo(37, 3.0f, 3.3f, SUPPORT_PARTIAL),
-
-                // 未适配
-                VersionInfo(36, 2.0f, 2.2f, SUPPORT_NOT)
+                VersionInfo(37, 4.0f, 4.0f, SUPPORT_FULL)
             )
         }
 
@@ -399,23 +390,23 @@ object DeviceHelper {
         @JvmStatic
         fun isVersionListed(): Boolean {
             val currentAndroid = androidSDK
-            val currentSmall = getSmallVersion()
+            val currentOS = hyperOSSDK
 
             return versionList.any { info ->
-                info.androidVersion == currentAndroid && info.matchesSmallVersion(currentSmall)
+                info.androidVersion == currentAndroid && info.matchesHyperOSVersion(currentOS)
             }
         }
 
         @JvmStatic
         fun getSupportStatus(): Int {
             val currentAndroid = androidSDK
-            val currentSmall = getSmallVersion()
+            val currentOS = hyperOSSDK
 
             for (info in versionList) {
                 if (info.androidVersion != currentAndroid) {
                     continue
                 }
-                if (info.matchesSmallVersion(currentSmall)) {
+                if (info.matchesHyperOSVersion(currentOS)) {
                     return info.supportStatus
                 }
             }
