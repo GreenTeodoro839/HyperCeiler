@@ -19,6 +19,7 @@
 package com.sevtinge.hyperceiler.hooker.systemui.statusbar;
 
 import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.Miui.isPad;
+import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreHyperOSVersion;
 import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreSmallVersion;
 
 import androidx.preference.Preference;
@@ -43,6 +44,11 @@ public class FocusNotificationSettings extends DashboardFragment {
         mIslandMediaCard = findPreference("prefs_key_system_ui_status_bar_island_media_card");
         mShortToast = findPreference("prefs_key_system_ui_status_bar_strong_toast_test_short_text");
         mLongToast = findPreference("prefs_key_system_ui_status_bar_strong_toast_test_long_text");
+
+        if (isMoreHyperOSVersion(4f)) {
+            // HyperOS 4: 状态栏 FocusedTextView 已无引用，焦点歌词无法适配
+            setPreVisible(findPreference("prefs_key_system_ui_statusbar_music_settings"), false);
+        }
 
         if (isMoreSmallVersion(200, 2f)) {
             setFuncHint(mShortToast, 1);
