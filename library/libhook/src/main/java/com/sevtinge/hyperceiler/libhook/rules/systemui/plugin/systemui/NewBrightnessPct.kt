@@ -73,12 +73,20 @@ object NewBrightnessPct {
 
     private fun getView(str: String, cl: ClassLoader?): Any? {
         val loader = cl ?: return null
-        val cl2 = loadClass(str, loader)
-        val controlCenterWindowView = cl2.callStaticMethod("getInstance")!!
-            .callMethod("getPluginComponent")!!
-            .getObjectField("controlCenterWindowViewCreatorProvider")!!
-            .callMethod("get")!!
-            .getObjectField("windowView")
-        return controlCenterWindowView
+        // HyperOS 4: PluginComponentFactory -> dagger.PluginComponentInitializer
+        val windowViewProvider = runCatching {
+            val cl2 = loadClass(str, loader)
+            cl2.callStaticMethod("getInstance")!!
+                .callMethod("getPluginComponent")!!
+                .getObjectField("controlCenterWindowViewCreatorProvider")!!
+                .callMethod("get")!!
+        }.getOrElse {
+            loadClass("miui.systemui.dagger.PluginComponentInitializer", loader)
+                .callStaticMethod("getPluginComponent")!!
+                .getObjectField("controlCenterWindowViewCreatorProvider")!!
+                .callMethod("get")!!
+        }
+        // HyperOS 4: provider.get() 直接返回 ControlCenterWindowViewImpl (FrameLayout)
+        return runCatching { windowViewProvider.getObjectField("windowView") }.getOrElse { windowViewProvider }
     }
 }

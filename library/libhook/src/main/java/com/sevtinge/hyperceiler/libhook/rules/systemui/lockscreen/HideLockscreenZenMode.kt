@@ -19,6 +19,7 @@
 package com.sevtinge.hyperceiler.libhook.rules.systemui.lockscreen
 
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
+import com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreHyperOSVersion
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.setObjectField
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
 import io.github.lingqiqi5211.ezhooktool.core.loadClass
@@ -30,6 +31,17 @@ object HideLockscreenZenMode : BaseHook() {
     }
 
     override fun init() {
+        if (isMoreHyperOSVersion(4f)) {
+            // HyperOS 4: 锁屏免打扰提示迁移至灵动翻转面板 (tinypanel)，
+            // 直接在数据合并阶段屏蔽 Zen 条目
+            loadClass("com.android.notification.tinypanel.FlipNotifDataStore")
+                .findMethod { name("merge") }
+                .createBeforeHook {
+                    it.args[0] = false
+                }
+            return
+        }
+
         // hyperOS fix by hyper helper
         zenModeClass.findMethod { filter { name.startsWith("updateVisibility") } }
             .createBeforeHook {

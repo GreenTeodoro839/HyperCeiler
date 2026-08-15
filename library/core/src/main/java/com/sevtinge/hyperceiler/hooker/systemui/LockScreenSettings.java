@@ -54,12 +54,14 @@ public class LockScreenSettings extends DashboardFragment {
             setFuncHint(mHideLeftButtonNew, 1);
             setFuncHint(mHideRightButton, 1);
             setFuncHint(mBlurButton, 1);
-        } else if (isMoreHyperOSVersion(3f)) {
+        } else if (isMoreHyperOSVersion(4f)) {
+            // HyperOS 4: AOD 快捷插件已移除，锁屏模糊按钮无法适配
             setPreVisible(mHideLeftButtonNew, false);
             setPreVisible(mHideRightButton, false);
+            setPreVisible(mBlurButton, false);
             setFuncHint(mChangeCV, 1);
             setFuncHint(mAnim, 1);
-        } else if (isMoreSmallVersion(200, 2f)) {
+        } else if (isMoreHyperOSVersion(3f)) {
             setFuncHint(mHideLeftButtonNew, 2);
             setFuncHint(mHideRightButton, 2);
         }

@@ -41,7 +41,11 @@ public class ScramblePIN extends BaseHook {
     public void init() {
         if (isMoreAndroidVersion(36)) {
             // thanks xzakota
+            // HyperOS 4: MiuiKeyguardPINView 已移除，回退 AOSP KeyguardPINView
             mKeyguardPINView = findClassIfExists("com.android.keyguard.widget.MiuiKeyguardPINView");
+            if (mKeyguardPINView == null) {
+                mKeyguardPINView = findClassIfExists("com.android.keyguard.KeyguardPINView");
+            }
         } else {
             mKeyguardPINView = findClassIfExists("com.android.keyguard.KeyguardPINView");
         }
