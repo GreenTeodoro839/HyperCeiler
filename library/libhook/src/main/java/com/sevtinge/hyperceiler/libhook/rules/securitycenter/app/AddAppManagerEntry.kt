@@ -24,6 +24,7 @@ import android.content.Intent
 import android.view.Menu
 import android.view.MenuItem
 import com.sevtinge.hyperceiler.libhook.R
+import com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreHyperOSVersion
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
 import io.github.lingqiqi5211.ezhooktool.core.loadClass
@@ -53,7 +54,12 @@ object AddAppManagerEntry : BaseHook() {
                     )
                     menuItem.intent = Intent(Intent.ACTION_MAIN).setClassName(
                         "com.android.settings",
-                        "com.android.settings.applications.ManageApplications"
+                        // HyperOS 4: ManageApplications 迁移至 manageapplications 包
+                        if (isMoreHyperOSVersion(4f)) {
+                            "com.android.settings.applications.manageapplications.ManageApplications"
+                        } else {
+                            "com.android.settings.applications.ManageApplications"
+                        }
                     )
                     menuItem.setIcon(idDrawableIconSettings)
                     menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
