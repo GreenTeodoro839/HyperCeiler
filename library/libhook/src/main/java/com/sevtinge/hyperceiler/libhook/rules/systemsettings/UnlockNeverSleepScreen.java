@@ -43,7 +43,11 @@ public class UnlockNeverSleepScreen extends BaseHook {
             }
         });
 
-        findAndHookConstructor("com.android.settings.KeyguardTimeoutListPreference", Context.class, AttributeSet.class, new IMethodHook() {
+        // HyperOS 4: KeyguardTimeoutListPreference 更名为 KeyguardTimeoutDropDownPreference
+        String keyguardTimeoutPreference = findClassIfExists("com.android.settings.KeyguardTimeoutListPreference") != null
+            ? "com.android.settings.KeyguardTimeoutListPreference"
+            : "com.android.settings.KeyguardTimeoutDropDownPreference";
+        findAndHookConstructor(keyguardTimeoutPreference, Context.class, AttributeSet.class, new IMethodHook() {
             @Override
             public void before(HookParam param) {
                 creatingPreference.set(true);

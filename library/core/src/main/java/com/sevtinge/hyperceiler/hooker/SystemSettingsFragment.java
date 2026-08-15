@@ -19,6 +19,7 @@
 package com.sevtinge.hyperceiler.hooker;
 
 import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.Miui.isPad;
+import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreHyperOSVersion;
 
 import android.os.Bundle;
 import android.widget.SeekBar;
@@ -48,6 +49,12 @@ public class SystemSettingsFragment extends DashboardFragment {
         mUiMode = findPreference("prefs_key_system_settings_unlock_ui_mode");
 
         mUiMode.setVisible(isPad());
+
+        if (isMoreHyperOSVersion(4f)) {
+            // HyperOS 4: UsbModeChooserActivity 已被系统移除，USB 默认模式选择无法适配
+            setPreVisible(findPreference("prefs_key_system_settings_usb_mode"), false);
+            setPreVisible(findPreference("prefs_key_system_settings_usb_mode_choose"), false);
+        }
 
         Bundle args1 = new Bundle();
         mRecommend = new RecommendPreference(requireContext());
