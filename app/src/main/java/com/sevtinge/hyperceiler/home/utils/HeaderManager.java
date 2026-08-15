@@ -9,6 +9,7 @@ import com.sevtinge.hyperceiler.home.HomePageFragment;
 import com.sevtinge.hyperceiler.utils.LanguageHelper;
 import com.sevtinge.hyperceiler.utils.PackagesUtils;
 import com.sevtinge.hyperceiler.utils.ScopeManager;
+import com.sevtinge.hyperceiler.utils.UnsupportedOsPackages;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -359,6 +360,10 @@ public class HeaderManager {
         String packageName = getPackageName(header);
         if (TextUtils.isEmpty(packageName)) {
             return true;
+        }
+
+        if (UnsupportedOsPackages.isUnsupported(packageName)) {
+            return false;
         }
 
         String normalizedPackageName = ScopeManager.normalizeScopePackageName(packageName);

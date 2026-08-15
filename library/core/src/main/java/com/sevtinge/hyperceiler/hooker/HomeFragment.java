@@ -46,7 +46,8 @@ public class HomeFragment extends DashboardFragment {
         boolean check = CheckModifyUtils.INSTANCE.getCheckResult(getContext(), "com.miui.home");
         boolean isDebugMode = getSharedPreferences().getBoolean("prefs_key_development_debug_mode", false);
 
-        mHeader.setVisible(check && !isDebugMode);
+        // HyperOS 4 桌面已原生重构，无法适配，仅展示提示
+        mHeader.setVisible((check || isMoreHyperOSVersion(4f)) && !isDebugMode);
     }
 
 }

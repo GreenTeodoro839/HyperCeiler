@@ -21,6 +21,7 @@ import com.sevtinge.hyperceiler.search.data.AppDatabase;
 import com.sevtinge.hyperceiler.search.data.ModDao;
 import com.sevtinge.hyperceiler.search.data.ModEntity;
 import com.sevtinge.hyperceiler.utils.LanguageHelper;
+import com.sevtinge.hyperceiler.utils.UnsupportedOsPackages;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -103,6 +104,11 @@ public class SearchHelper {
                     if (packageName == null) packageName = summaryAttr;
                     int inflatedXml = resolveResId(inflatedXmlAttr);
                     int iconResId = resolveResId(iconAttr);
+
+                    if (UnsupportedOsPackages.isUnsupported(packageName)) {
+                        eventType = xml.next();
+                        continue;
+                    }
 
                     if (groupTitle != null && packageName != null) {
                         GROUP_PACKAGE_MAP.put(groupTitle, packageName);
