@@ -27,6 +27,8 @@ import android.view.View;
 import androidx.core.content.ContextCompat;
 
 import com.sevtinge.hyperceiler.libhook.base.BaseHook;
+
+import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreHyperOSVersion;
 import io.github.lingqiqi5211.ezhooktool.xposed.java.IMethodHook;
 
 import io.github.lingqiqi5211.ezhooktool.xposed.common.HookParam;
@@ -35,6 +37,8 @@ public class HideStatusBarBeforeScreenshot extends BaseHook {
 
     private static final String COLLAPSED_STATUS_BAR_CLASS =
         "com.android.systemui.statusbar.phone.MiuiCollapsedStatusBarFragment";
+    private static final String PHONE_STATUS_BAR_VIEW_CLASS =
+        "com.android.systemui.statusbar.phone.MiuiPhoneStatusBarView";
     private static final String ACTION_TAKE_SCREENSHOT = "miui.intent.TAKE_SCREENSHOT";
     private static final String EXTRA_IS_FINISHED = "IsFinished";
     private static final String HOT_RELOAD_VIEW_KEY =
@@ -47,13 +51,23 @@ public class HideStatusBarBeforeScreenshot extends BaseHook {
         if (restoredView != null) {
             registerScreenshotReceiver(restoredView);
         }
-        hookAllMethods(COLLAPSED_STATUS_BAR_CLASS, "onViewCreated", new IMethodHook() {
-            @Override
-            public void after(HookParam param) {
-                View view = (View) param.getArgs()[0];
-                registerScreenshotReceiver(view);
-            }
-        });
+        if (isMoreHyperOSVersion(4f)) {
+            // HyperOS 4: CollapsedStatusBarFragment 已移除，状态栏视图本身即 MiuiPhoneStatusBarView
+            hookAllMethods(PHONE_STATUS_BAR_VIEW_CLASS, "onAttachedToWindow", new IMethodHook() {
+                @Override
+                public void after(HookParam param) {
+                    registerScreenshotReceiver((View) param.getThisObject());
+                }
+            });
+        } else {
+            hookAllMethods(COLLAPSED_STATUS_BAR_CLASS, "onViewCreated", new IMethodHook() {
+                @Override
+                public void after(HookParam param) {
+                    View view = (View) param.getArgs()[0];
+                    registerScreenshotReceiver(view);
+                }
+            });
+        }
     }
 
     private void registerScreenshotReceiver(View view) {

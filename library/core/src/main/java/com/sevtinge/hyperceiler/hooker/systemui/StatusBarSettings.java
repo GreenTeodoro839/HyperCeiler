@@ -19,7 +19,6 @@
 package com.sevtinge.hyperceiler.hooker.systemui;
 
 
-import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreHyperOSVersion;
 import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreSmallVersion;
 import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isSupportTelephony;
 
@@ -47,10 +46,7 @@ public class StatusBarSettings extends DashboardFragment {
     public void initPrefs() {
 
         mHideStatusBarOnLockScreen = findPreference("prefs_key_system_ui_status_bar_hide_icon");
-        if (isMoreHyperOSVersion(4f)) {
-            // HyperOS 4: MiuiCollapsedStatusBarFragment 已移除，截图隐藏状态栏无法适配
-            setPreVisible(mHideStatusBarOnLockScreen, false);
-        } else if (isMoreSmallVersion(200, 2f)) {
+        if (isMoreSmallVersion(200, 2f)) {
             mHideStatusBarOnLockScreen.setSummary(R.string.system_ui_status_bar_hide_icon_desc);
         }
 
