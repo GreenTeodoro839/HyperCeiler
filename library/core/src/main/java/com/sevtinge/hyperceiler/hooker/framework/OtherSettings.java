@@ -61,9 +61,7 @@ public class OtherSettings extends DashboardFragment {
         mVerifyDisable = findPreference("prefs_key_system_framework_disable_verify_can_ve_disabled");
 
         if (isMoreHyperOSVersion(4f)) {
-            // HyperOS 4: WifiService 已移出 system_server，防蹭网检测失效；
-            // ThermalManagerService 迁移至 power.thermal 且接口重构，禁用温控无法适配
-            setPreVisible(findPreference("prefs_key_system_settings_anti_ques"), false);
+            // HyperOS 4: ThermalManagerService 迁移至 power.thermal 且接口重构，禁用温控无法适配
             setPreVisible(findPreference("prefs_key_system_framework_other_disable_thermal"), false);
         }
 
