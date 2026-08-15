@@ -154,7 +154,7 @@ jobs:
           commits = event.get("commits", [])
           compare_url = event.get("compare", "")
           caption_limit = 1024
-          branch_text = "Branch:\nHyperOS 3"
+          branch_text = "Branch:\nHyperOS 4"
 
           def escape_code_block(text):
               return text.replace("\\", "\\\\").replace("`", "\\`")
