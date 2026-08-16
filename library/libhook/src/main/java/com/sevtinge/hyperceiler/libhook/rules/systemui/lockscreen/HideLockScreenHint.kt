@@ -19,16 +19,34 @@
 package com.sevtinge.hyperceiler.libhook.rules.systemui.lockscreen
 
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
+import com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreHyperOSVersion
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
 import io.github.lingqiqi5211.ezhooktool.core.loadClassOrNull
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createHook
 
 object HideLockScreenHint : BaseHook() {
+    private const val DISMISSIBLE_KEYGUARD_INDICATION = 13
+
     private val keyguardIndicationController by lazy {
         loadClassOrNull("com.android.systemui.statusbar.KeyguardIndicationController")
     }
 
     override fun init() {
+        if (isMoreHyperOSVersion(4f)) {
+            loadClassOrNull("com.android.systemui.keyguard.KeyguardIndicationRotateTextViewController")
+                ?.findMethod {
+                    name("updateIndication")
+                    paramCount(3)
+                }?.createHook {
+                    before { param ->
+                        if (param.args[0] == DISMISSIBLE_KEYGUARD_INDICATION) {
+                            param.result = null
+                        }
+                    }
+                }
+            return
+        }
+
         val controllerClass = keyguardIndicationController ?: return
         controllerClass.findMethod {
             paramCount(1)
