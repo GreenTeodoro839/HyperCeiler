@@ -38,6 +38,7 @@ import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.get
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
+import com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreAndroidVersion
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.systemui.controlcenter.PublicClass.miuiMediaControlPanel
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.systemui.controlcenter.PublicClass.miuiMediaViewControllerImpl
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.systemui.controlcenter.PublicClass.playerTwoCircleView
@@ -98,7 +99,11 @@ object MediaControlBgFactory : BaseHook() {
             ?: ColorSchemeClass!!.findFieldOrNull("accent2")
     }
     val enumStyleContent: Any? by lazy {
-        loadClass("com.android.systemui.monet.Style", lpparam.classLoader).findMethod { name("valueOf") }.invoke(null, "CONTENT")
+        if (isMoreAndroidVersion(36)) {
+            6
+        } else {
+            loadClass("com.android.systemui.monet.Style", lpparam.classLoader).findMethod { name("valueOf") }.invoke(null, "CONTENT")
+        }
     }
 
     private val metIconGetBitmap by lazy {
