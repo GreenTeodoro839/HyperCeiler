@@ -106,8 +106,10 @@ object NewNetworkSpeed : BaseHook() {
         runCatching {
             if (isMoreHyperOSVersion(3f) && networkStyle != 0) {
                 // 仅 HyperOS 3+ 出现末尾加空格的情况
+                val updateNetworkSpeedMethod =
+                    if (isMoreHyperOSVersion(4f)) "updateNetworkSpeed$1" else "updateNetworkSpeed"
                 nsvCls!!.findMethod {
-                    name("updateNetworkSpeed")
+                    name(updateNetworkSpeedMethod)
                 }.createAfterHook {
                     val mNetworkSpeedNumberText = it.thisObject.getObjectFieldAs<TextView>("mNetworkSpeedNumberText")
                     val mNetworkSpeedNumber = it.thisObject.getObjectFieldAs<CharSequence>("mNetworkSpeedNumber")
