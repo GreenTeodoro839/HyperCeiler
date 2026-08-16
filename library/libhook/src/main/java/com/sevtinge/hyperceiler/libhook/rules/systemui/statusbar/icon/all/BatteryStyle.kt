@@ -20,6 +20,7 @@ package com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar.icon.all
 
 import android.graphics.Typeface
 import android.util.TypedValue
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.sevtinge.hyperceiler.common.utils.PrefsBridge
@@ -69,6 +70,12 @@ object BatteryStyle : BaseHook() {
         mBatteryMeterViewClass.findMethod { name(updateAllMethod) }.createAfterHook { param ->
             hookStatusBattery(param)
         }
+
+        if (isChangeLocation && !isHideText && isMoreHyperOSVersion(4f)) {
+            mBatteryMeterViewClass.findMethod { name("onLayout") }.createAfterHook { param ->
+                changeLocationHyperOS4(param)
+            }
+        }
     }
 
     private fun changeLocation(
@@ -80,6 +87,24 @@ object BatteryStyle : BaseHook() {
         batteryView.removeView(mBatteryPercentMarkView)
         batteryView.addView(mBatteryPercentMarkView, 0)
         batteryView.addView(mBatteryPercentView, 0)
+    }
+
+    private fun changeLocationHyperOS4(param: HookParam) {
+        val batteryView = param.thisObject as LinearLayout
+        val batteryDigitalView =
+            getObjectField(param.thisObject, "mBatteryDigitalView") as View
+        val batteryPercentContainer =
+            getObjectField(param.thisObject, "mBatteryPercentContainer") as View
+
+        if (batteryDigitalView.visibility != View.VISIBLE ||
+            batteryPercentContainer.visibility != View.VISIBLE
+        ) {
+            return
+        }
+
+        val direction = if (batteryView.layoutDirection == View.LAYOUT_DIRECTION_RTL) -1 else 1
+        batteryDigitalView.offsetLeftAndRight(direction * batteryPercentContainer.width)
+        batteryPercentContainer.offsetLeftAndRight(-direction * batteryDigitalView.width)
     }
 
     private fun setBatterySize(view: TextView, size: Float) {
