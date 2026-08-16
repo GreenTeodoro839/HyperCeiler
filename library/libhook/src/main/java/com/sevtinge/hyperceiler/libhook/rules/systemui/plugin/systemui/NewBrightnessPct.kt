@@ -86,7 +86,10 @@ object NewBrightnessPct {
                 .getObjectField("controlCenterWindowViewCreatorProvider")!!
                 .callMethod("get")!!
         }
-        // HyperOS 4: provider.get() 直接返回 ControlCenterWindowViewImpl (FrameLayout)
+        // HyperOS 4: provider.get() 返回 Creator，实际窗口视图保存在 StateFlow 中
+        if (isMoreHyperOSVersion(4f)) {
+            return windowViewProvider.callMethod("getWindowView")?.callMethod("getValue")
+        }
         return runCatching { windowViewProvider.getObjectField("windowView") }.getOrElse { windowViewProvider }
     }
 }
