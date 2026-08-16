@@ -24,10 +24,20 @@ import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createBeforeHooks
 
 object DisableThermal : BaseHook() {
     override fun init() {
-        findClass("com.android.server.power.ThermalManagerService").findAllMethods { name("postEventListener") }
+        val hyperOs4Service = findClassIfExists(
+            "com.android.server.power.thermal.ThermalManagerService"
+        )
+        val thermalManagerService = hyperOs4Service
+            ?: findClass("com.android.server.power.ThermalManagerService")
+        val callbackMethod = if (hyperOs4Service != null) {
+            "postEventListenerLocked"
+        } else {
+            "postEventListener"
+        }
+
+        thermalManagerService.findAllMethods { name(callbackMethod) }
             .createBeforeHooks {
                 it.result = null
             }
-
     }
 }
