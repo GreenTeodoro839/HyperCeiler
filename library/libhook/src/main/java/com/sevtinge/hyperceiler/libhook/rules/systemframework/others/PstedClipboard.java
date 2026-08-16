@@ -32,9 +32,8 @@ public class PstedClipboard extends BaseHook {
     public void init() {
 
         if (isMoreAndroidVersion(36)) {
-            findAndHookMethod("com.android.server.clipboard.ClipboardService",
+            hookAllMethods("com.android.server.clipboard.ClipboardService",
                 "lambda$showAccessNotificationLocked$5",
-                String.class, int.class, ArraySet.class, int.class,
                 new IMethodHook() {
                     @Override
                     public void before(HookParam param) {
