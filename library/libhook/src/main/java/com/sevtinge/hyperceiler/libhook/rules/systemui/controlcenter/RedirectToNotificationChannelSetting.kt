@@ -104,13 +104,42 @@ object RedirectToNotificationChannelSetting : BaseHook() {
                 ?: findClass("com.android.systemui.statusbar.notification.NotificationSettingsHelper")
         notificationSettingsHelper.findMethodOrNull { name("startAppNotificationSettings") }?.createHook {
                 before { param ->
-                    startChannelNotificationSettings(statusBarNotification!!)
+                    val sbn = statusBarNotification
+                    if (sbn != null) {
+                        startChannelNotificationSettings(sbn)
+                    } else if (isMoreAndroidVersion(36)) {
+                        val context = param.args.getOrNull(0) as? Context ?: return@before
+                        val packageName = param.args.getOrNull(1) as? String ?: return@before
+                        val uid = param.args.getOrNull(3) as? Int ?: return@before
+                        val channelId = param.args.getOrNull(4) as? String ?: return@before
+                        startChannelNotificationSettings(
+                            context, packageName, channelId, uid, null
+                        )
+                    } else {
+                        return@before
+                    }
                     param.result = null
                 }
             }
     }
 
     private fun startChannelNotificationSettings(statusBarNotification: StatusBarNotification) {
+        startChannelNotificationSettings(
+            appContext,
+            statusBarNotification.packageName,
+            statusBarNotification.notification.channelId,
+            statusBarNotification.uid,
+            statusBarNotification.notification.shortcutId
+        )
+    }
+
+    private fun startChannelNotificationSettings(
+        context: Context,
+        packageName: String,
+        channelId: String,
+        uid: Int,
+        conversationId: String?
+    ) {
         val intent = Intent(Intent.ACTION_MAIN).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -126,18 +155,18 @@ object RedirectToNotificationChannelSetting : BaseHook() {
             )
             putExtra(
                 Settings.EXTRA_APP_PACKAGE,
-                statusBarNotification.packageName
+                packageName
             )
             putExtra(
                 Settings.EXTRA_CHANNEL_ID,
-                statusBarNotification.notification.channelId
+                channelId
             )
-            putExtra("app_uid", statusBarNotification.uid)
-                .putExtra(
-                Settings.EXTRA_CONVERSATION_ID, statusBarNotification.notification.shortcutId
-            )
+            putExtra("app_uid", uid)
+            conversationId?.let {
+                putExtra(Settings.EXTRA_CONVERSATION_ID, it)
+            }
         }
-        appContext.startActivity(intent)
+        context.startActivity(intent)
         /*val userHandleCurrent =
             UserHandle::class.java.getObjectFieldOrNullAs<UserHandle>("CURRENT")
 
