@@ -47,7 +47,9 @@ object NewShowVolumePct {
             loadClass("com.android.systemui.miui.volume.VolumePanelViewController", classLoader)
         }
         val volumePanelViewControllerListener by lazy {
-            if (isMoreHyperOSVersion(3f)) {
+            if (isMoreHyperOSVersion(4f)) {
+                loadClass($$"com.android.systemui.miui.volume.VolumePanelViewController$VolumeSeekBarChangeListener", classLoader)
+            } else if (isMoreHyperOSVersion(3f)) {
                 loadClass($$"miui.systemui.controlcenter.panel.main.volume.VolumeSliderController$seekBarListener$1", classLoader)
             } else {
                 loadClass($$"com.android.systemui.miui.volume.VolumePanelViewController$VolumeSeekBarChangeListener", classLoader)
@@ -93,7 +95,7 @@ object NewShowVolumePct {
                 val seekBar = it.args[0] as SeekBar
                 val arg1 = it.args[1] as Int
                 val arg2 = it.args[2] as Boolean
-                val isObj: Any = if (isMoreHyperOSVersion(3f)) {
+                val isObj: Any = if (isMoreHyperOSVersion(3f) && !isMoreHyperOSVersion(4f)) {
                     it.thisObject.getObjectFieldOrNull("this$0")
                 } else {
                     it.thisObject
@@ -107,7 +109,9 @@ object NewShowVolumePct {
 
                 val mColumn =
                     isObj.getObjectFieldOrNull("mColumn") ?: return@createAfterHook
-                val ss = mColumn.getObjectFieldOrNull("ss") ?: return@createAfterHook
+                val ss = mColumn.getObjectFieldOrNull("ss")
+                    ?: runCatching { mColumn.callMethod("getSs") }.getOrNull()
+                    ?: return@createAfterHook
 
                 if (getOrCacheStream(mColumn) == 10) return@createAfterHook
 
