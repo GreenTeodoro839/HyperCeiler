@@ -23,11 +23,13 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import com.sevtinge.hyperceiler.common.utils.PrefsBridge
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
+import com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreHyperOSVersion
 import com.sevtinge.hyperceiler.libhook.utils.api.PropUtils
 import io.github.lingqiqi5211.ezhooktool.core.callMethod
 import io.github.lingqiqi5211.ezhooktool.core.callMethodAs
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
 import io.github.lingqiqi5211.ezhooktool.core.loadClass
+import io.github.lingqiqi5211.ezhooktool.xposed.common.HookParam
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createAfterHook
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createBeforeHook
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getObjectFieldAs
@@ -59,10 +61,7 @@ object CustomCarrierText : BaseHook() {
     private fun hookLegacyCarrierText() {
         runCatching {
             loadClass("com.android.systemui.statusbar.phone.MiuiKeyguardStatusBarView").findMethod { name("onCarrierTextChanged") }.createBeforeHook { param ->
-                    param.args[2] = transformCarrierText(
-                        slotId = param.args[1] as Int,
-                        carrierText = param.args[2] as? String
-                    )
+                    replaceCarrierText(param)
                 }
         }
     }
@@ -71,12 +70,18 @@ object CustomCarrierText : BaseHook() {
     private fun hookModernCarrierText() {
         runCatching {
             loadClass($$"com.android.systemui.controlcenter.shade.ControlCenterCarrierText$mCarrierTextCallback$1").findMethod { name("onCarrierTextChanged") }.createBeforeHook { param ->
-                    param.args[2] = transformCarrierText(
-                        slotId = param.args[1] as Int,
-                        carrierText = param.args[2] as? String
-                    )
+                    replaceCarrierText(param)
                 }
         }
+    }
+
+    private fun replaceCarrierText(param: HookParam) {
+        val carrierTextIndex = if (isMoreHyperOSVersion(4f)) 1 else 2
+        val slotIdIndex = if (isMoreHyperOSVersion(4f)) 2 else 1
+        param.args[carrierTextIndex] = transformCarrierText(
+            slotId = param.args[slotIdIndex] as Int,
+            carrierText = param.args[carrierTextIndex] as? String
+        )
     }
 
     private fun transformCarrierText(slotId: Int, carrierText: String?): String? {
