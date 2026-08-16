@@ -45,7 +45,7 @@ object DisableBottomBar : BaseHook() {
                         // 只要一碰小白条这个方法就会疯狂执行，猫猫问号？
                         val mode = it.thisObject.getObjectFieldOrNullAs<Int>("mWindowingMode") ?: return@after
                         val host = it.thisObject.getObjectFieldOrNull("mMiuiDecorationRootViewHost") ?: return@after
-                        val view = host.getObjectFieldOrNullAs<View>("mMiuiDecorationBottomView") ?: return@after
+                        val view = host.getObjectFieldOrNullAs<View>("mRootView") ?: return@after
 
                         val desiredAlpha = if (mode == 5) 0f else 1f
 
