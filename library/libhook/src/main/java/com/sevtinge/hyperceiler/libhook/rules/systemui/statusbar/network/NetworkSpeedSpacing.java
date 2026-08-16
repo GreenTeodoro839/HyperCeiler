@@ -35,6 +35,7 @@ public class NetworkSpeedSpacing extends BaseHook {
     @Override
     public void init() {
         if (tryHookPostUpdateMethod()) return;
+        if (tryHookHandlerClass("com.android.systemui.statusbar.policy.NetworkSpeedController$5")) return;
         if (tryHookHandlerClass("com.android.systemui.statusbar.policy.NetworkSpeedController$4")) return;
         tryHookHandlerClass("com.android.systemui.statusbar.policy.NetworkSpeedController$2");
     }
@@ -92,4 +93,3 @@ public class NetworkSpeedSpacing extends BaseHook {
         return PrefsBridge.getInt("system_ui_statusbar_network_speed_update_spacings", DEFAULT_INTERVAL) * 100L;
     }
 }
-
