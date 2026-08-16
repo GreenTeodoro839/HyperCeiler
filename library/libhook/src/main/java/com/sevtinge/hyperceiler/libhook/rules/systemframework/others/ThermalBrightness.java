@@ -39,34 +39,45 @@ public class ThermalBrightness extends BaseHook {
 
     @Override
     public void init() {
-        try {
-            findClass(displayPowerControllerImpl);
-            findAndHookConstructor(displayPowerControllerImpl,
+        if (isMoreAndroidVersion(37)) {
+            hookAllMethods(displayPowerControllerImpl, "init",
                 new IMethodHook() {
                     @Override
                     public void after(HookParam param) {
-                        setBooleanField(param, "SUPPORT_TEMEPERATURE_CONTROL", false);
-                        setBooleanField(param, "mThermalBrightnessControlAvailable", false);
-                        setBooleanField(param, "mApplyThermalBrightnessRate", false);
+                        setBooleanField(param.getThisObject(), "mThermalBrightnessControlAvailable", false);
                     }
                 }
             );
-        } catch (Throwable e) {
-            XposedLog.e(TAG, getPackageName(), "No found class: " + e);
-        }
+        } else {
+            try {
+                findClass(displayPowerControllerImpl);
+                findAndHookConstructor(displayPowerControllerImpl,
+                    new IMethodHook() {
+                        @Override
+                        public void after(HookParam param) {
+                            setBooleanField(param, "SUPPORT_TEMEPERATURE_CONTROL", false);
+                            setBooleanField(param, "mThermalBrightnessControlAvailable", false);
+                            setBooleanField(param, "mApplyThermalBrightnessRate", false);
+                        }
+                    }
+                );
+            } catch (Throwable e) {
+                XposedLog.e(TAG, getPackageName(), "No found class: " + e);
+            }
 
-        try {
-            findClass(automaticBrightnessControllerImpl);
-            findAndHookConstructor(automaticBrightnessControllerImpl,
-                new IMethodHook() {
-                    @Override
-                    public void after(HookParam param) {
-                        setBooleanField(param, "SUPPORT_TEMEPERATURE_CONTROL", false);
+            try {
+                findClass(automaticBrightnessControllerImpl);
+                findAndHookConstructor(automaticBrightnessControllerImpl,
+                    new IMethodHook() {
+                        @Override
+                        public void after(HookParam param) {
+                            setBooleanField(param, "SUPPORT_TEMEPERATURE_CONTROL", false);
+                        }
                     }
-                }
-            );
-        } catch (Throwable e) {
-            XposedLog.e(TAG, getPackageName(), "No found class: " + e);
+                );
+            } catch (Throwable e) {
+                XposedLog.e(TAG, getPackageName(), "No found class: " + e);
+            }
         }
 
         if (isMoreAndroidVersion(36)) {
