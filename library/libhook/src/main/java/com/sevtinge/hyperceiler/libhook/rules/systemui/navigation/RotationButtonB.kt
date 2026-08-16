@@ -53,7 +53,7 @@ object RotationButtonB : BaseHook() {
                 ensureRotationObserver(it.thisObject, mContext)
             }
 
-        loadClass($$$"com.android.systemui.navigationbar.views.NavigationBarView$$ExternalSyntheticLambda1").findMethod { name("get") }.createBeforeHook {
+        loadClass($$$"com.android.systemui.navigationbar.views.NavigationBarView$$ExternalSyntheticLambda0").findMethod { name("get") }.createBeforeHook {
                 if (!enable) return@createBeforeHook
 
                 val navigationBarView = it.thisObject.getObjectField("f$0") ?: return@createBeforeHook
