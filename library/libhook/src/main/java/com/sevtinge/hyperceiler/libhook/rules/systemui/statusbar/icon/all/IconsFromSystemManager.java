@@ -57,7 +57,15 @@ public class IconsFromSystemManager extends BaseHook {
                     public void before(HookParam param) {
                         String slotName = (String) param.getArgs()[0];
                         if (checkSlot(slotName)) {
-                            Object statusBarIconInstance = getObjectField(param.getArgs()[1], "mIcon");
+                            Object statusBarIconInstance;
+                            try {
+                                statusBarIconInstance = getObjectField(param.getArgs()[1], "mIcon");
+                            } catch (Throwable ignored) {
+                                statusBarIconInstance = null;
+                            }
+                            if (statusBarIconInstance == null) {
+                                statusBarIconInstance = getObjectField(param.getArgs()[1], "icon");
+                            }
                             setObjectField(statusBarIconInstance, "visible", false);
                         }
                     }
