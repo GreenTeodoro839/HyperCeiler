@@ -268,14 +268,24 @@ public class UiLockApp extends BaseHook {
     }
 
     private void hookLauncherProxyStopScreenPinning() {
-        Class<?> launcherProxyClass = findClassIfExists("com.android.systemui.recents.LauncherProxyService$1");
+        Class<?> launcherProxyClass = findClassIfExists("com.android.systemui.LauncherProxyService$1");
+        if (launcherProxyClass == null) {
+            launcherProxyClass = findClassIfExists("com.android.systemui.recents.LauncherProxyService$1");
+        }
         if (launcherProxyClass == null) return;
 
         chainAllMethods(launcherProxyClass, "verifyCallerAndClearCallingIdentityPostMain", new XposedInterface.Hooker() {
             @Override
             public Object intercept(XposedInterface.Chain chain) throws Throwable {
                 Object[] args = chain.getArgs().toArray();
-                if (args.length > 0 && "stopScreenPinning".equals(args[0])) {
+                boolean isStopScreenPinning = false;
+                for (Object arg : args) {
+                    if ("stopScreenPinning".equals(arg)) {
+                        isStopScreenPinning = true;
+                        break;
+                    }
+                }
+                if (isStopScreenPinning) {
                     Context context = resolveContext(chain.getThisObject());
                     if (context != null && getLockApp(context) != -1) {
                         XposedLog.d(TAG, "block LauncherProxyService.stopScreenPinning while locked");
