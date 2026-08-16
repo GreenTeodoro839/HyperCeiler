@@ -65,9 +65,10 @@ object BatteryStyle : BaseHook() {
     }
 
     override fun init() {
-        mBatteryMeterViewClass.findMethod { name("updateAll$1") }.createAfterHook { param ->
-                hookStatusBattery(param)
-            }
+        val updateAllMethod = if (isMoreHyperOSVersion(4f)) "updateAll" else "updateAll$1"
+        mBatteryMeterViewClass.findMethod { name(updateAllMethod) }.createAfterHook { param ->
+            hookStatusBattery(param)
+        }
     }
 
     private fun changeLocation(
@@ -132,8 +133,11 @@ object BatteryStyle : BaseHook() {
             getObjectField(param.thisObject, "mBatteryPercentView") as TextView
         val mBatteryPercentMarkView =
             getObjectField(param.thisObject, "mBatteryPercentMarkView") as TextView
-        val mBatteryTextDigitView =
+        val mBatteryTextDigitView = if (isMoreHyperOSVersion(4f)) {
+            null
+        } else {
             getObjectField(param.thisObject, "mBatteryTextDigitView") as TextView
+        }
 
         // 交换电池图标与电量位置（电量外显下才能正常交换）
         // Todo：HyperOS3 因为修改了布局，需要重新适配
@@ -144,7 +148,7 @@ object BatteryStyle : BaseHook() {
         // 以下功能需要启用修改
         if (!isHideText && isEnableCustom) {
             if (fontSize > 7.5) {
-                setBatterySize(mBatteryTextDigitView, fontSize)
+                mBatteryTextDigitView?.let { setBatterySize(it, fontSize) }
                 setBatterySize(mBatteryPercentView, fontSize)
             }
             if (fontSizeMark > 7.5) {
@@ -152,7 +156,7 @@ object BatteryStyle : BaseHook() {
             }
 
             if (isEnableBold) {
-                mBatteryTextDigitView.typeface = Typeface.DEFAULT_BOLD
+                mBatteryTextDigitView?.typeface = Typeface.DEFAULT_BOLD
                 mBatteryPercentView.typeface = Typeface.DEFAULT_BOLD
             }
 
