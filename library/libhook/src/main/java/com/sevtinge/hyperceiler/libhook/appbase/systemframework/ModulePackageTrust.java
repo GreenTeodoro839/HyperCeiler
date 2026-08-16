@@ -52,6 +52,19 @@ public class ModulePackageTrust extends BaseHook {
                 }
             });
 
+        chainAllMethods("com.android.server.permission.access.permission.AppIdPermissionPolicy",
+            "shouldGrantPermissionBySignature",
+            new XposedInterface.Hooker() {
+                @Override
+                public Object intercept(XposedInterface.Chain chain) throws Throwable {
+                    String packageName = (String) callMethod(chain.getArg(1), "getPackageName");
+                    if (systemPackages.contains(packageName)) {
+                        return true;
+                    }
+                    return chain.proceed();
+                }
+            });
+
         chainAllMethods("com.android.server.pm.PackageManagerServiceUtils",
             "verifySignatures",
             new XposedInterface.Hooker() {
