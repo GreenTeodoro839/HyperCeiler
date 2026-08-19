@@ -31,7 +31,7 @@ internal class PluginFactory(obj: Any) {
     }
 
     lateinit var pluginCtxRef: WeakReference<Context>
-    val mComponentName: Any? = com.sevtinge.hyperceiler.libhook.base.BaseHook.getObjectField(obj , "mComponentName")
+    val mComponentName: Any? = com.sevtinge.hyperceiler.libhook.base.BaseHook.getObjectField(obj , "componentName")
 
     fun componentNames(type: Int, str: String): ComponentName {
         return when (type) {
