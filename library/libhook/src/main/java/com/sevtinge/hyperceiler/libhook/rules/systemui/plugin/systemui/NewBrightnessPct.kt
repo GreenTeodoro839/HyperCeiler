@@ -24,7 +24,6 @@ import com.sevtinge.hyperceiler.common.log.XposedLog
 import com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreHyperOSVersion
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.tool.AppsTool
 import io.github.lingqiqi5211.ezhooktool.core.callMethod
-import io.github.lingqiqi5211.ezhooktool.core.callStaticMethod
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getObjectField
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
 import io.github.lingqiqi5211.ezhooktool.core.loadClass
@@ -62,23 +61,14 @@ object NewBrightnessPct {
     }
 
     private fun startPct(it: HookParam) {
-        val windowView = getView("miui.systemui.dagger.PluginComponentFactory", it.thisObject.javaClass.classLoader)
-        if (windowView == null) {
+        val sliderInner = it.thisObject.getObjectField("this$0")
+            ?.callMethod("getVToggleSliderInner") as? ViewGroup
+        if (sliderInner == null) {
             XposedLog.e("NewBrightnessPct", "ControlCenterWindowViewImpl is null")
             return
         }
-        AppsTool.initPct(windowView as ViewGroup, 2)
+        val windowView = sliderInner.rootView as ViewGroup
+        AppsTool.initPct(windowView, 2)
         AppsTool.mPct.visibility = View.VISIBLE
-    }
-
-    private fun getView(str: String, cl: ClassLoader?): Any? {
-        val loader = cl ?: return null
-        val cl2 = loadClass(str, loader)
-        val controlCenterWindowView = cl2.callStaticMethod("getInstance")!!
-            .callMethod("getPluginComponent")!!
-            .getObjectField("controlCenterWindowViewCreatorProvider")!!
-            .callMethod("get")!!
-            .getObjectField("windowView")
-        return controlCenterWindowView
     }
 }

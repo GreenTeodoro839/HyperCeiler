@@ -23,7 +23,6 @@ import static com.sevtinge.hyperceiler.libhook.utils.api.PropUtils.getProp;
 
 import android.telephony.SubscriptionInfo;
 import android.view.View;
-import android.widget.TextView;
 
 import com.sevtinge.hyperceiler.common.utils.PrefsBridge;
 import com.sevtinge.hyperceiler.libhook.base.BaseHook;
@@ -42,17 +41,18 @@ public class HideDelimiter extends BaseHook {
     @Override
     public void init() {
         try {
-            findClass("com.android.systemui.statusbar.policy.MiuiCarrierTextController").getDeclaredMethod("fireCarrierTextChanged", String.class);
+            findClass("com.android.systemui.statusbar.policy.MiuiCarrierTextController")
+                    .getDeclaredMethod("fireCarrierTextChanged", int.class, String.class, int.class);
             findAndHookMethod("com.android.systemui.statusbar.policy.MiuiCarrierTextController",
-                    "fireCarrierTextChanged", String.class,
+                    "fireCarrierTextChanged", int.class, String.class, int.class,
                     new IMethodHook() {
                         @Override
                         public void before(HookParam param) {
-                            String mCurrentCarrier = (String) param.getArgs()[0];
+                            String mCurrentCarrier = (String) param.getArgs()[1];
                             switch (prefs) {
-                                case 1 -> param.getArgs()[0] = mCurrentCarrier.replace(" | ", "");
-                                case 2 -> param.getArgs()[0] = "";
-                                case 3 -> param.getArgs()[0] = getProp("persist.sys.device_name");
+                                case 1 -> param.getArgs()[1] = mCurrentCarrier.replace(" | ", "");
+                                case 2 -> param.getArgs()[1] = "";
+                                case 3 -> param.getArgs()[1] = getProp("persist.sys.device_name");
                             }
                         }
                     }
@@ -217,15 +217,15 @@ public class HideDelimiter extends BaseHook {
             IMethodHook hideOperatorHook = new IMethodHook() {
                 @Override
                 public void after(HookParam param) {
-                    Object carrierView;
-                    TextView mCarrierText;
+                    View carrierView;
                     try {
-                        carrierView = getObjectField(param.getThisObject(), "carrierText");
+                        carrierView = (View) getObjectField(param.getThisObject(), "mCarrierTextLayout");
                     } catch (Throwable e) {
-                        carrierView = getObjectField(param.getThisObject(), "mCarrierText");
+                        carrierView = (View) getObjectField(param.getThisObject(), "mCarrierContainer");
                     }
-                    mCarrierText = (TextView) carrierView;
-                    mCarrierText.setVisibility(View.GONE);
+                    if (carrierView != null) {
+                        carrierView.setVisibility(View.GONE);
+                    }
                 }
             };
 
@@ -243,7 +243,7 @@ public class HideDelimiter extends BaseHook {
             }
 
             findAndHookMethod("com.android.systemui.qs.MiuiNotificationHeaderView",
-                    "updateCarrierTextVisibility", hideOperatorHook);
+                    "updateCarrierText$1", hideOperatorHook);
 
             try {
                 findAndHookMethod("com.android.systemui.qs.MiuiQSHeaderView",
@@ -259,4 +259,3 @@ public class HideDelimiter extends BaseHook {
         }
     }
 }
-

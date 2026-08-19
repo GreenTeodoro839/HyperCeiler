@@ -24,6 +24,5 @@ import static com.sevtinge.hyperceiler.libhook.base.BaseHook.returnConstant;
 public class HideEditButton {
     public static void initHideEditButton(ClassLoader classLoader) {
         findAndHookMethod("miui.systemui.controlcenter.panel.main.qs.EditButtonController", classLoader, "available", boolean.class, returnConstant(false));
-        findAndHookMethod("miui.systemui.controlcenter.panel.main.qs.EditButtonController", classLoader, "available", boolean.class, "miui.systemui.controlcenter.panel.main.MainPanelModeController$MainPanelMode", returnConstant(false));
     }
 }
