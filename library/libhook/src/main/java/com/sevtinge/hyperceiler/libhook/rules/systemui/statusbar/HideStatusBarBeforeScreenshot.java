@@ -18,6 +18,8 @@
 */
 package com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar;
 
+import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreAndroidVersion;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -43,6 +45,8 @@ public class HideStatusBarBeforeScreenshot extends BaseHook {
 
     @Override
     public void init() {
+        if (isMoreAndroidVersion(36)) return;
+
         View restoredView = getHotReloadRuntimeState(HOT_RELOAD_VIEW_KEY, View.class);
         if (restoredView != null) {
             registerScreenshotReceiver(restoredView);
