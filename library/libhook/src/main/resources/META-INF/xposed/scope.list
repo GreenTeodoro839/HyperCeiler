@@ -32,9 +32,7 @@ com.miui.cloudservice
 com.miui.contentextension
 com.miui.creation
 com.miui.euicc
-com.miui.gallery
 com.miui.guardprovider
-com.miui.home
 com.miui.huanji
 com.miui.mediaeditor
 com.miui.mishare.connectivity
@@ -50,7 +48,6 @@ com.miui.screenshot
 com.miui.securityadd
 com.miui.securitycenter
 com.miui.tsmclient
-com.miui.weather2
 com.xiaomi.aiasst.vision
 com.xiaomi.aicr
 com.xiaomi.barrage
@@ -69,4 +66,3 @@ com.miui.voicetrigger
 com.xiaomi.simactivate.service
 miui.systemui.plugin
 com.xiaomi.xmsf
-

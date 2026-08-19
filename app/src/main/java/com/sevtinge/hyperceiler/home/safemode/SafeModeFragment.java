@@ -52,7 +52,6 @@ public class SafeModeFragment extends SettingsPreferenceFragment implements Pref
     public static final String ANDROID_NS = "http://schemas.android.com/apk/res/android";
 
     private String mPkgList;
-    private SwitchPreference mHome;
     private SwitchPreference mSettings;
     private SwitchPreference mSystemUi;
     private SwitchPreference mSecurityCenter;
@@ -66,7 +65,6 @@ public class SafeModeFragment extends SettingsPreferenceFragment implements Pref
     @Override
     public void initPrefs() {
         mPkgList = getProp(CrashScope.PROP_SAFE_MODE);
-        mHome = findPreference("prefs_key_home_safe_mode_enable");
         mSettings = findPreference("prefs_key_system_settings_safe_mode_enable");
         mSystemUi = findPreference("prefs_key_system_ui_safe_mode_enable");
         mSecurityCenter = findPreference("prefs_key_security_center_safe_mode_enable");
@@ -75,7 +73,6 @@ public class SafeModeFragment extends SettingsPreferenceFragment implements Pref
 
         setCheckedState();
 
-        mHome.setOnPreferenceChangeListener(this);
         mDemo.setOnPreferenceChangeListener(this);
         mSettings.setOnPreferenceChangeListener(this);
         mSystemUi.setOnPreferenceChangeListener(this);
@@ -88,7 +85,6 @@ public class SafeModeFragment extends SettingsPreferenceFragment implements Pref
         Set<String> pkgSet = new HashSet<>(CrashScope.getCrashingAliases());
         mSystemUi.setChecked(isEnabled("systemui", "system_ui_safe_mode_enable", pkgSet));
         mSettings.setChecked(isEnabled("settings", "settings_safe_mode_enable", pkgSet));
-        mHome.setChecked(isEnabled("home", "home_safe_mode_enable", pkgSet));
         mSecurityCenter.setChecked(isEnabled("center", "security_center_safe_mode_enable", pkgSet));
         mDemo.setChecked(isEnabled("demo", "demo_safe_mode_enable", pkgSet));
     }
@@ -146,9 +142,7 @@ public class SafeModeFragment extends SettingsPreferenceFragment implements Pref
     @Override
     public boolean onPreferenceChange(@NonNull Preference preference, Object o) {
         String key = null;
-        if (preference == mHome) {
-            key = "home";
-        } else if (preference == mSettings) {
+        if (preference == mSettings) {
             key = "settings";
         } else if (preference == mSystemUi) {
             key = "systemui";

@@ -151,7 +151,6 @@ public class DialogHelper {
                 .setPositiveButton(R.string.safe_mode_cancel, (dialog, which) -> {
                     ShellInit.getShell().run("setprop persist.service.hyperceiler.crash.report \"\"").sync();
                     PrefsBridge.removeByApp("prefs_key_system_ui_safe_mode_enable");
-                    PrefsBridge.removeByApp("prefs_key_home_safe_mode_enable");
                     PrefsBridge.removeByApp("prefs_key_system_settings_safe_mode_enable");
                     PrefsBridge.removeByApp("prefs_key_security_center_safe_mode_enable");
                     PrefsBridge.removeByApp("prefs_key_demo_safe_mode_enable");

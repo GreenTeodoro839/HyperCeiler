@@ -15,7 +15,6 @@ public class CrashReportManager {
     private static final Map<String, Integer> NAME_MAP = Map.of(
         "com.android.systemui", com.sevtinge.hyperceiler.core.R.string.system_ui,
         "com.android.settings", com.sevtinge.hyperceiler.core.R.string.system_settings,
-        "com.miui.home", com.sevtinge.hyperceiler.core.R.string.mihome,
         "com.miui.securitycenter", com.sevtinge.hyperceiler.core.R.string.security_center_hyperos
     );
 

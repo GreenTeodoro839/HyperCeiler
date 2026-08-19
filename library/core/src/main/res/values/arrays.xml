@@ -20,7 +20,6 @@
 <resources>
     <string-array name="restart_apps_name_hyperos">
         <item>@string/system_ui</item>
-        <item>@string/mihome</item>
         <item>@string/system_settings</item>
         <item>@string/security_center_hyperos</item>
         <!--<item>@string/personal_assistant</item>
@@ -32,7 +31,6 @@
 
     <string-array name="restart_apps_packagename">
         <item>com.android.systemui</item>
-        <item>com.miui.home</item>
         <item>com.android.settings</item>
         <item>com.miui.securitycenter</item>
         <!--<item>com.miui.personalassistant</item>

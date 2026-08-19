@@ -30,8 +30,7 @@ public class AppTaskManager {
 
     private static final List<String> CHECK_LIST = List.of(
         "com.miui.securitycenter",
-        "com.android.camera",
-        "com.miui.home"
+        "com.android.camera"
     );
 
     public static void attach(Context context) {

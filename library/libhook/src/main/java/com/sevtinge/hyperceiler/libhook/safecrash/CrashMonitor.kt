@@ -430,8 +430,6 @@ class CrashMonitor(lpparam: PackageTarget) {
         if (pkgName == "com.android.systemui") {
             Settings.Global.putInt(context.contentResolver, "sys.rescueparty.systemui.level", 0)
             Settings.Global.putInt(context.contentResolver, "sys.anr.rescue.systemui.level", 0)
-        } else if (pkgName == "com.miui.home") {
-            Settings.Global.putInt(context.contentResolver, "sys.rescueparty.home.level", 0)
         }
     }
 

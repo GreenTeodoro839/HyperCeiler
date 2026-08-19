@@ -51,9 +51,7 @@
         <item>com.miui.contentextension</item> <!--传送门-->
         <item>com.miui.creation</item> <!--小米创作-->
         <item>com.miui.euicc</item> <!--LPA-->
-        <item>com.miui.gallery</item> <!--相册-->
         <item>com.miui.guardprovider</item> <!--系统安全组件-->
-        <item>com.miui.home</item> <!--系统桌面-->
         <item>com.miui.huanji</item> <!--小米换机-->
         <item>com.miui.mediaeditor</item> <!--小米相册-编辑-->
         <item>com.miui.mishare.connectivity</item> <!--小米互传-->
@@ -70,7 +68,6 @@
         <item>com.miui.securitycenter</item> <!--手机管家-->
         <item>com.miui.tsmclient</item> <!--小米智能卡-->
         <!--<item>com.miui.voiceassist</item>--> <!--超级小爱-->
-        <item>com.miui.weather2</item> <!--天气-->
         <item>com.xiaomi.aiasst.vision</item> <!--小爱翻译-->
         <item>com.xiaomi.barrage</item> <!--弹幕通知-->
         <item>com.xiaomi.joyose</item> <!--Joyose-->

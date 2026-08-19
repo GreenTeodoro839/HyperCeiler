@@ -28,7 +28,6 @@ object CrashScope {
         mapOf(
             "com.android.systemui" to "systemui",
             "com.android.settings" to "settings",
-            "com.miui.home" to "home",
             "com.miui.securitycenter" to "center",
             "com.hchen.demo" to "demo"
         )
@@ -37,7 +36,6 @@ object CrashScope {
     private val safeModeConfigMap: Map<String, String> by lazy {
         mapOf(
             "com.android.systemui" to "system_ui_safe_mode_enable",
-            "com.miui.home" to "home_safe_mode_enable",
             "com.android.settings" to "settings_safe_mode_enable",
             "com.miui.securitycenter" to "security_center_safe_mode_enable",
             "com.hchen.demo" to "demo_safe_mode_enable"

@@ -40,7 +40,6 @@ public class HomePageBannerManager {
     private static final Map<String, Integer> SAFE_MODE_APP_NAME_RES_MAP = Map.of(
         "com.android.systemui", com.sevtinge.hyperceiler.core.R.string.system_ui,
         "com.android.settings", com.sevtinge.hyperceiler.core.R.string.system_settings,
-        "com.miui.home", com.sevtinge.hyperceiler.core.R.string.mihome,
         "com.hchen.demo", R.string.demo,
         "com.miui.securitycenter", com.sevtinge.hyperceiler.core.R.string.security_center_hyperos
     );

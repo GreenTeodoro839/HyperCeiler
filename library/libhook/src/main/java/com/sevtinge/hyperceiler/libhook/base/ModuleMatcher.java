@@ -49,8 +49,7 @@ public class ModuleMatcher {
 
     private static final Set<String> SECURITY_CHECK_PACKAGES = Set.of(
         "com.miui.securitycenter",
-        "com.android.camera",
-        "com.miui.home"
+        "com.android.camera"
     );
 
     private final MatchContext context;

@@ -228,24 +228,10 @@
 
     <header
         android:icon="@drawable/ic_default"
-        android:id="@+id/gallery"
-        android:summary="com.miui.gallery"
-        android:title="@string/gallery"
-        app:inflatedXml="@xml/gallery"/>
-
-    <header
-        android:icon="@drawable/ic_default"
         android:id="@+id/guardprovider"
         android:summary="com.miui.guardprovider"
         android:title="@string/guard_provider_hyperos"
         app:inflatedXml="@xml/guard_provider"/>
-
-    <header
-        android:icon="@drawable/ic_default"
-        android:id="@+id/home"
-        android:summary="com.miui.home"
-        android:title="@string/mihome"
-        android:fragment="com.sevtinge.hyperceiler.hooker.HomeFragment"/>
 
     <header
         android:icon="@drawable/ic_default"
@@ -365,13 +351,6 @@
         android:summary="com.miui.voicetrigger"
         android:title="@string/voicetrigger"
         app:inflatedXml="@xml/voicetrigger"/>
-
-    <header
-        android:fragment="com.sevtinge.hyperceiler.hooker.WeatherFragment"
-        android:icon="@drawable/ic_default"
-        android:id="@+id/weather"
-        android:summary="com.miui.weather2"
-        android:title="@string/weather" />
 
     <header
         android:fragment="com.sevtinge.hyperceiler.hooker.AiasstFragment"

@@ -102,7 +102,6 @@ public class CrashActivity extends AppCompatActivity {
     private String getAppName(String pkg) {
         if ("com.android.systemui".equals(pkg)) return getString(com.sevtinge.hyperceiler.core.R.string.system_ui);
         if ("com.android.settings".equals(pkg)) return getString(com.sevtinge.hyperceiler.core.R.string.system_settings);
-        if ("com.miui.home".equals(pkg)) return getString(com.sevtinge.hyperceiler.core.R.string.mihome);
         if ("com.hchen.demo".equals(pkg)) return getString(com.sevtinge.hyperceiler.R.string.demo);
         if ("com.miui.securitycenter".equals(pkg)) return getString(com.sevtinge.hyperceiler.core.R.string.security_center_hyperos);
         return pkg;

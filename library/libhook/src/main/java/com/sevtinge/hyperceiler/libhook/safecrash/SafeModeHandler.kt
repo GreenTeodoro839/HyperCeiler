@@ -75,7 +75,6 @@ object SafeModeHandler : ICrashHandler {
     private fun isInSafeModeByConfig(pkgName: String): Boolean {
         return when (pkgName) {
             "com.android.systemui" -> PrefsBridge.getBoolean("system_ui_safe_mode_enable")
-            "com.miui.home" -> PrefsBridge.getBoolean("home_safe_mode_enable")
             "com.android.settings" -> PrefsBridge.getBoolean("settings_safe_mode_enable")
             "com.miui.securitycenter" -> PrefsBridge.getBoolean("security_center_safe_mode_enable")
             else -> false
