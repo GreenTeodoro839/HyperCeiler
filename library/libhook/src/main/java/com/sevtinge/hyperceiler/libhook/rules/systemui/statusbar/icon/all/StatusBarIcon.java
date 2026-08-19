@@ -32,10 +32,10 @@ public class StatusBarIcon extends BaseHook {
         List<String> statusBarList = (List<String>) com.sevtinge.hyperceiler.libhook.base.BaseHook.getStaticObjectField(mMiuiIconManagerUtils, "RIGHT_BLOCK_LIST");
         List<String> ctrlCenterList = (List<String>) com.sevtinge.hyperceiler.libhook.base.BaseHook.getStaticObjectField(mMiuiIconManagerUtils, "CONTROL_CENTER_BLOCK_LIST");
 
-        hyperIconShowManager(statusBarList, ctrlCenterList, mMiuiIconManagerUtils);
+        hyperIconShowManager(statusBarList, ctrlCenterList);
     }
 
-    private void hyperIconShowManager(List<String> statusBarList, List<String> ctrlCenterList, Class<?> mMiuiIconManagerUtils) {
+    private void hyperIconShowManager(List<String> statusBarList, List<String> ctrlCenterList) {
         setIcon(PrefsBridge.getStringAsInt("system_ui_status_bar_icon_vpn", 0), "vpn", statusBarList, ctrlCenterList);
         setIcon(PrefsBridge.getStringAsInt("system_ui_status_bar_icon_alarm_clock", 0), "alarm_clock", statusBarList, ctrlCenterList);
         setIcon(PrefsBridge.getStringAsInt("system_ui_status_bar_icon_nfc", 0), "nfc", statusBarList, ctrlCenterList);
@@ -64,8 +64,8 @@ public class StatusBarIcon extends BaseHook {
         setIcon(PrefsBridge.getStringAsInt("system_ui_status_bar_icon_tv", 0), "tv", statusBarList, ctrlCenterList);
         setIcon(PrefsBridge.getStringAsInt("system_ui_status_bar_icon_wireless_headset", 0), "wireless_headset", statusBarList, ctrlCenterList);
 
-        com.sevtinge.hyperceiler.libhook.base.BaseHook.setStaticObjectField(mMiuiIconManagerUtils, "RIGHT_BLOCK_LIST", statusBarList);
-        com.sevtinge.hyperceiler.libhook.base.BaseHook.setStaticObjectField(mMiuiIconManagerUtils, "CONTROL_CENTER_BLOCK_LIST", ctrlCenterList);
+        // The block lists are static final references. Keep modifying them in place; Android 17
+        // rejects reflective writes to static final fields.
     }
 
     private void setIcon(int value, String name, List<String> statusBarList, List<String> controlList){
