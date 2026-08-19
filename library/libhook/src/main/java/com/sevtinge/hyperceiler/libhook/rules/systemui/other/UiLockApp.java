@@ -63,6 +63,14 @@ public class UiLockApp extends BaseHook {
         "com.android.systemui.navigationbar.views.NavigationBar",
         "com.android.systemui.navigationbar.NavigationBar"
     };
+    private static final String[] APPLICATION_CLASS_CANDIDATES = new String[] {
+        "com.android.systemui.application.impl.SystemUIApplicationImpl",
+        "com.android.systemui.SystemUIApplication"
+    };
+    private static final String[] LAUNCHER_PROXY_CLASS_CANDIDATES = new String[] {
+        "com.android.systemui.LauncherProxyService$1",
+        "com.android.systemui.recents.LauncherProxyService$1"
+    };
     private static final String[] TASKBAR_DELEGATE_CLASS_CANDIDATES = new String[] {
         "com.android.systemui.navigationbar.TaskbarDelegate"
     };
@@ -89,22 +97,9 @@ public class UiLockApp extends BaseHook {
             updateStatusBarVisibility(restoredContext);
         }
 
-        findAndChainMethod("com.android.systemui.SystemUIApplication",
-            "onCreate",
-            new XposedInterface.Hooker() {
-                @Override
-                public Object intercept(XposedInterface.Chain chain) throws Throwable {
-                    Object result = chain.proceed();
-                    try {
-                        Context context = (Context) callMethod(chain.getThisObject(), "getApplicationContext");
-                        registerObserverIfNeeded(context);
-                    } catch (Throwable e) {
-                        XposedLog.w(TAG, "SystemUIApplication onCreate hook E: " + e);
-                    }
-                    return result;
-                }
-            }
-        );
+        for (String className : APPLICATION_CLASS_CANDIDATES) {
+            hookApplicationClass(className);
+        }
 
         for (String className : STATUS_BAR_WINDOW_CONTROLLER_CLASS_CANDIDATES) {
             hookStatusBarWindowControllerClass(className);
@@ -267,8 +262,33 @@ public class UiLockApp extends BaseHook {
         }
     }
 
+    private void hookApplicationClass(String className) {
+        findAndChainMethod(className,
+            "onCreate",
+            new XposedInterface.Hooker() {
+                @Override
+                public Object intercept(XposedInterface.Chain chain) throws Throwable {
+                    Object result = chain.proceed();
+                    try {
+                        Context context = (Context) callMethod(chain.getThisObject(), "getApplicationContext");
+                        registerObserverIfNeeded(context);
+                    } catch (Throwable e) {
+                        XposedLog.w(TAG, "SystemUIApplication onCreate hook E: " + e);
+                    }
+                    return result;
+                }
+            }
+        );
+    }
+
     private void hookLauncherProxyStopScreenPinning() {
-        Class<?> launcherProxyClass = findClassIfExists("com.android.systemui.recents.LauncherProxyService$1");
+        for (String className : LAUNCHER_PROXY_CLASS_CANDIDATES) {
+            hookLauncherProxyStopScreenPinning(className);
+        }
+    }
+
+    private void hookLauncherProxyStopScreenPinning(String className) {
+        Class<?> launcherProxyClass = findClassIfExists(className);
         if (launcherProxyClass == null) return;
 
         chainAllMethods(launcherProxyClass, "verifyCallerAndClearCallingIdentityPostMain", new XposedInterface.Hooker() {
