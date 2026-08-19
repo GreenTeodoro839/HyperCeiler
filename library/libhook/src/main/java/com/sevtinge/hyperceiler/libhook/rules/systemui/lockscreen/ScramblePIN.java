@@ -18,8 +18,6 @@
 */
 package com.sevtinge.hyperceiler.libhook.rules.systemui.lockscreen;
 
-import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreAndroidVersion;
-
 import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,12 +37,7 @@ public class ScramblePIN extends BaseHook {
 
     @Override
     public void init() {
-        if (isMoreAndroidVersion(36)) {
-            // thanks xzakota
-            mKeyguardPINView = findClassIfExists("com.android.keyguard.widget.MiuiKeyguardPINView");
-        } else {
-            mKeyguardPINView = findClassIfExists("com.android.keyguard.KeyguardPINView");
-        }
+        mKeyguardPINView = findClassIfExists("com.android.keyguard.KeyguardPINView");
 
         findAndHookMethod(mKeyguardPINView, "onFinishInflate", new IMethodHook() {
             @Override

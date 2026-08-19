@@ -35,6 +35,7 @@ public class LockScreenSettings extends DashboardFragment {
     SwitchPreference mBlurButton; // 锁屏模糊按钮
     SwitchPreference mChangeCV; // 显示充电动画
     SwitchPreference mAnim; // 联动动画
+    SwitchPreference mHideZenMode; // 隐藏勿扰模式通知
     DropDownPreference mHideLeftButtonNew; // 左侧按钮自定义
 
     @Override
@@ -49,6 +50,11 @@ public class LockScreenSettings extends DashboardFragment {
         mBlurButton = findPreference("prefs_key_system_ui_lock_screen_blur_button");
         mChangeCV = findPreference("prefs_key_system_ui_lock_screen_show_charging_cv");
         mAnim = findPreference("prefs_key_system_ui_lock_screen_linkage_anim");
+        mHideZenMode = findPreference("prefs_key_system_ui_lock_screen_not_disturb_mode");
+
+        if (isMoreHyperOSVersion(3f)) {
+            setFuncHint(mHideZenMode, 1);
+        }
 
         if (isPad()) {
             setFuncHint(mHideLeftButtonNew, 1);

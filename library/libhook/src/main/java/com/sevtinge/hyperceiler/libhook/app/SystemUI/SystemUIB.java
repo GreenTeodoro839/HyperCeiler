@@ -60,7 +60,6 @@ import com.sevtinge.hyperceiler.libhook.rules.systemui.lockscreen.AllowThirdLock
 import com.sevtinge.hyperceiler.libhook.rules.systemui.lockscreen.DisableUnlockByBleToast;
 import com.sevtinge.hyperceiler.libhook.rules.systemui.lockscreen.HideLockScreenHint;
 import com.sevtinge.hyperceiler.libhook.rules.systemui.lockscreen.HideLockScreenStatusBar;
-import com.sevtinge.hyperceiler.libhook.rules.systemui.lockscreen.HideLockscreenZenMode;
 import com.sevtinge.hyperceiler.libhook.rules.systemui.lockscreen.KeepNotification;
 import com.sevtinge.hyperceiler.libhook.rules.systemui.lockscreen.LockScreenDoubleTapToSleep;
 import com.sevtinge.hyperceiler.libhook.rules.systemui.lockscreen.NotificationShowOnKeyguard;
@@ -123,7 +122,6 @@ public class SystemUIB extends BaseLoad {
         initHook(HideLockScreenStatusBar.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_hide_status_bar"));
         initHook(NotificationShowOnKeyguard.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_unlock_notification_restrict"));
         initHook(KeepNotification.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_keep_notification"));
-        initHook(HideLockscreenZenMode.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_not_disturb_mode"));
         initHook(new ScramblePIN(), PrefsBridge.getBoolean("system_ui_lock_screen_scramble_pin"));
         initHook(AllowThirdLockScreenUseFace.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_allow_third_face"));
         initHook(new DisableUnlockByBleToast(), PrefsBridge.getBoolean("system_ui_lock_screen_disable_unlock_by_ble_toast"));
