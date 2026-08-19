@@ -24,69 +24,70 @@ import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createBeforeHooks
 
 object DisableCleaner : BaseHook() {
     override fun init() {
-        findClass("com.android.server.am.ActivityManagerService")
-            .findAllMethods { name("checkExcessivePowerUsage") }
-            .createBeforeHooks {
+        findClassIfExists("com.android.server.am.ActivityManagerService")
+            ?.findAllMethods { name("checkExcessivePowerUsage") }
+            ?.createBeforeHooks {
                 it.result = null
             }
 
-        findClass("com.android.server.am.ActivityManagerShellCommand")
-            .findAllMethods { name("runKillAll") }
-            .createBeforeHooks {
+        findClassIfExists("com.android.server.am.ActivityManagerShellCommand")
+            ?.findAllMethods { name("runKillAll") }
+            ?.createBeforeHooks {
                 it.result = null
             }
 
-        findClass("com.android.server.am.CameraBooster")
-            .findAllMethods { name("boostCameraIfNeeded") }
-            .createBeforeHooks {
+        (findClassIfExists("com.android.server.am.CameraBooster")
+            ?: findClassIfExists("com.miui.cameraopt.booster.CameraBooster"))
+            ?.findAllMethods { filter { name in setOf("boostCameraIfNeeded", "boostCameraByThreshold") } }
+            ?.createBeforeHooks {
                 it.result = null
             }
 
-        findClass("com.android.server.am.OomAdjuster")
-            .findAllMethods { name("shouldKillExcessiveProcesses") }
-            .createBeforeHooks {
+        findClassIfExists("com.android.server.am.psc.OomAdjuster")
+            ?.findAllMethods { name("shouldKillExcessiveProcesses") }
+            ?.createBeforeHooks {
                 it.result = false
             }
 
-        findClass("com.android.server.am.OomAdjuster")
-            .findAllMethods { name("updateAndTrimProcessLSP") }
-            .createBeforeHooks {
+        findClassIfExists("com.android.server.am.psc.OomAdjuster")
+            ?.findAllMethods { name("updateAndTrimProcessLSP") }
+            ?.createBeforeHooks {
                 it.args[2] = 0
             }
 
-        findClass("com.android.server.am.PhantomProcessList")
-            .findAllMethods { name("trimPhantomProcessesIfNecessary") }
-            .createBeforeHooks {
+        findClassIfExists("com.android.server.am.PhantomProcessList")
+            ?.findAllMethods { name("trimPhantomProcessesIfNecessary") }
+            ?.createBeforeHooks {
                 it.result = null
             }
 
-        findClass("com.android.server.am.ProcessMemoryCleaner")
-            .findAllMethods { name("checkBackgroundProcCompact") }
-            .createBeforeHooks {
+        findClassIfExists("com.android.server.am.ProcessMemoryCleaner")
+            ?.findAllMethods { name("checkBackgroundProcCompact") }
+            ?.createBeforeHooks {
                 it.result = null
             }
 
-        findClass("com.android.server.am.ProcessPowerCleaner")
-            .findAllMethods { name("handleAutoLockOff") }
-            .createBeforeHooks {
+        findClassIfExists("com.android.server.am.ProcessPowerCleaner")
+            ?.findAllMethods { name("handleAutoLockOff") }
+            ?.createBeforeHooks {
                 it.result = null
             }
 
-        findClass("com.android.server.am.SystemPressureController")
-            .findAllMethods { name("nStartPressureMonitor") }
-            .createBeforeHooks {
+        findClassIfExists("com.android.server.am.SystemPressureController")
+            ?.findAllMethods { name("nStartPressureMonitor") }
+            ?.createBeforeHooks {
                 it.result = null
             }
 
-        findClass("com.android.server.wm.RecentTasks")
-            .findAllMethods { name("trimInactiveRecentTasks") }
-            .createBeforeHooks {
+        findClassIfExists("com.android.server.wm.RecentTasks")
+            ?.findAllMethods { name("trimInactiveRecentTasks") }
+            ?.createBeforeHooks {
                 it.result = null
             }
 
-        findClass("com.miui.cameraopt.adapter.ProcessManagerAdapter")
-            .findAllMethods { name("killApplication") }
-            .createBeforeHooks {
+        findClassIfExists("com.miui.cameraopt.adapter.ProcessManagerAdapter")
+            ?.findAllMethods { name("killApplication") }
+            ?.createBeforeHooks {
                 it.result = null
             }
 

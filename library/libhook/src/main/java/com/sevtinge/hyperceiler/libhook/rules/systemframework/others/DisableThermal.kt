@@ -24,8 +24,10 @@ import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createBeforeHooks
 
 object DisableThermal : BaseHook() {
     override fun init() {
-        findClass("com.android.server.power.ThermalManagerService").findAllMethods { name("postEventListener") }
-            .createBeforeHooks {
+        (findClassIfExists("com.android.server.power.thermal.ThermalManagerService")
+            ?: findClassIfExists("com.android.server.power.ThermalManagerService"))
+            ?.findAllMethods { filter { name.startsWith("postEventListener") } }
+            ?.createBeforeHooks {
                 it.result = null
             }
 
