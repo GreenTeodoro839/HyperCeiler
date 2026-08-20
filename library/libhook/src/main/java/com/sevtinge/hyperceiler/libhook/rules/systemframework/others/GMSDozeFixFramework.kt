@@ -242,8 +242,12 @@ object GMSDozeFixFramework : BaseHook() {
                 chain.proceed()
             }
             Deoptimizers.deoptimize(isInWhiteListMethod)
-        } catch (e: Exception) {
-            XposedLog.e(TAG, packageName, "Hook Failed in isInWhiteList", e)
+        } catch (t: Throwable) {
+            XposedLog.e(
+                TAG,
+                packageName,
+                "Hook Failed in isInWhiteList: ${t.stackTraceToString()}"
+            )
         }
     }
 
