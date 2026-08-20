@@ -65,7 +65,7 @@ object BatteryStyle : BaseHook() {
     }
 
     override fun init() {
-        mBatteryMeterViewClass.findMethod { name("updateAll$1") }.createAfterHook { param ->
+        mBatteryMeterViewClass.findMethod { name("updateAll") }.createAfterHook { param ->
                 hookStatusBattery(param)
             }
     }
