@@ -22,6 +22,7 @@ import com.sevtinge.hyperceiler.common.log.XposedLog
 import com.sevtinge.hyperceiler.common.utils.PrefsBridge
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
+import io.github.lingqiqi5211.ezhooktool.core.findMethodOrNull
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createHook
 import org.luckypray.dexkit.query.enums.*
 import java.lang.reflect.*
@@ -126,13 +127,9 @@ object UnlockVideoSomeFunc : BaseHook() {
             } else if (counter == 3 && enhance) {
                 hook(methods)
 
-                val newChar = findTat.name.toCharArray()
-                for (i in newChar.indices) {
-                    newChar[i]++
-                }
-                val newName = String(newChar)
+                val newName = nextObfuscatedName(findTat.name) ?: return@forEach
                 XposedLog.d(TAG, lpparam.packageName, "find EnhanceContours Method(${methods.declaringClass}) is $newName")
-                findTat.declaringClass.findMethod { name("newName") }.createHook {
+                findTat.declaringClass.findMethodOrNull { name(newName) }?.createHook {
                         returnConstant(true)
                     }
             }
@@ -144,5 +141,21 @@ object UnlockVideoSomeFunc : BaseHook() {
             returnConstant(true)
         }
     }
-}
 
+    private fun nextObfuscatedName(name: String): String? {
+        if (name.isEmpty() || name.any { it !in 'a'..'z' && it !in 'A'..'Z' }) return null
+
+        val chars = name.toCharArray()
+        for (i in chars.indices.reversed()) {
+            when (chars[i]) {
+                'z' -> chars[i] = 'a'
+                'Z' -> chars[i] = 'A'
+                else -> {
+                    chars[i]++
+                    return String(chars)
+                }
+            }
+        }
+        return (if (name[0] in 'a'..'z') 'a' else 'A') + String(chars)
+    }
+}
