@@ -23,6 +23,7 @@ import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.Miui.isPad
 import android.os.Bundle;
 import android.widget.SeekBar;
 
+import androidx.preference.Preference;
 import androidx.preference.SwitchPreference;
 
 import com.sevtinge.hyperceiler.prefs.RecommendPreference;
@@ -37,6 +38,10 @@ import fan.preference.SeekBarPreferenceCompat;
 public class SystemSettingsFragment extends DashboardFragment {
     SwitchPreference mUiMode;
     RecommendPreference mRecommend;
+    Preference mAllowNeverSleepScreen;
+    Preference mMoreNotificationSettings;
+    Preference mUsbMode;
+    Preference mUsbModeChoose;
 
     @Override
     public int getPreferenceScreenResId() {
@@ -48,6 +53,16 @@ public class SystemSettingsFragment extends DashboardFragment {
         mUiMode = findPreference("prefs_key_system_settings_unlock_ui_mode");
 
         mUiMode.setVisible(isPad());
+
+        mAllowNeverSleepScreen = findPreference("prefs_key_system_settings_allow_never_lock_screen");
+        mMoreNotificationSettings = findPreference("prefs_key_system_settings_more_notification_settings");
+        mUsbMode = findPreference("prefs_key_system_settings_usb_mode");
+        mUsbModeChoose = findPreference("prefs_key_system_settings_usb_mode_choose");
+
+        setPreVisible(mAllowNeverSleepScreen, false);
+        setPreVisible(mMoreNotificationSettings, false);
+        setPreVisible(mUsbMode, false);
+        setPreVisible(mUsbModeChoose, false);
 
         Bundle args1 = new Bundle();
         mRecommend = new RecommendPreference(requireContext());
