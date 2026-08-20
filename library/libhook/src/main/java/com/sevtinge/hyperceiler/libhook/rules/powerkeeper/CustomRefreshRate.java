@@ -47,8 +47,9 @@ public class CustomRefreshRate extends BaseHook {
             public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
                 MethodData methodData = bridge.findMethod(FindMethod.create()
                         .matcher(MethodMatcher.create()
-                                .usingStrings("custom_mode_switch", "fucSwitch")
-                                .returnType(boolean.class)
+                                .usingStrings("parseCustomModeSwitchFromDb mIsCustomFpsSwitch= ")
+                                .returnType(void.class)
+                                .paramTypes(String.class)
                         )).singleOrNull();
                 return methodData;
             }
@@ -61,7 +62,8 @@ public class CustomRefreshRate extends BaseHook {
         hookMethod(mFucSwitchMethod, new IMethodHook() {
             @Override
             public void before(HookParam param) {
-                com.sevtinge.hyperceiler.libhook.base.BaseHook.setObjectField(param.getThisObject(), "mIsCustomFpsSwitch", "true");
+                com.sevtinge.hyperceiler.libhook.base.BaseHook.setStaticObjectField(
+                        mFucSwitchMethod.getDeclaringClass(), "mIsCustomFpsSwitch", "true");
             }
         });
     }
