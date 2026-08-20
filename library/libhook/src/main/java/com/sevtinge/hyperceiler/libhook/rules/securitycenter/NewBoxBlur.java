@@ -18,7 +18,6 @@
 */
 package com.sevtinge.hyperceiler.libhook.rules.securitycenter;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
@@ -38,12 +37,7 @@ import io.github.lingqiqi5211.ezhooktool.xposed.common.HookParam;
 
 public class NewBoxBlur extends BaseHook {
 
-    Class<?> mNewBoxCls;
     Class<?> mTurboaLayout;
-    Class<?> mWindowManager;
-    Class<?> mVideoBoxCls;
-
-
     Class<?> mTurboLayout;
     Class<?> mDockLayout;
 
@@ -53,41 +47,35 @@ public class NewBoxBlur extends BaseHook {
         mDockLayout = findClassIfExists("com.miui.gamebooster.windowmanager.newbox.j");
         mTurboLayout = findClassIfExists("com.miui.gamebooster.windowmanager.newbox.TurboLayout");
 
-        mNewBoxCls = findClassIfExists("com.miui.gamebooster.windowmanager.newbox.i");
         mTurboaLayout = findClassIfExists("com.miui.gamebooster.windowmanager.newbox.NewToolBoxTopView");
-        mWindowManager = findClassIfExists("com.miui.gamebooster.windowmanager.j");
 
-        mVideoBoxCls = findClassIfExists("com.miui.gamebooster.videobox.adapter.i");
-
-
-        hookAllConstructors(mDockLayout, new IMethodHook() {
-            @Override
-            public void after(HookParam param) {
-                ViewGroup view = (ViewGroup) param.getThisObject();
-                int paddingVertical = DisplayUtils.dp2px(PrefsBridge.getInt("security_center_newbox_bg_padding_vertical", 10));
-                int paddingHorizontal = DisplayUtils.dp2px(PrefsBridge.getInt("security_center_newbox_bg_padding_horizontal", 10));
-                view.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
-                new BlurUtils(view, "security_center_newbox_bg_custom");
-            }
-        });
+        if (mDockLayout == null) {
+            XposedLog.w(TAG, getPackageName(), "newbox dock layout class not found");
+        } else {
+            hookAllConstructors(mDockLayout, new IMethodHook() {
+                @Override
+                public void after(HookParam param) {
+                    ViewGroup view = (ViewGroup) param.getThisObject();
+                    int paddingVertical = DisplayUtils.dp2px(PrefsBridge.getInt("security_center_newbox_bg_padding_vertical", 10));
+                    int paddingHorizontal = DisplayUtils.dp2px(PrefsBridge.getInt("security_center_newbox_bg_padding_horizontal", 10));
+                    view.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
+                    new BlurUtils(view, "security_center_newbox_bg_custom");
+                }
+            });
+        }
 
         //
-        hookAllConstructors(mTurboLayout, new IMethodHook() {
-            @Override
-            public void after(HookParam param) {
-                ViewGroup view = (ViewGroup) callMethod(param.getThisObject(), "getDockLayout");
-                new BlurUtils(view, "security_center_newbox_bg_custom");
-            }
-        });
-
-        /*findAndHookConstructor(mNewBoxCls, Context.class, boolean.class, String.class, mWindowManager, new IMethodHook() {
-            @Override
-            public void after(HookParam param) {
-                View view = (View) param.getThisObject();
-                new BlurUtils(view, "various_new_box_blur");
-
-            }
-        });*/
+        if (mTurboLayout == null) {
+            XposedLog.w(TAG, getPackageName(), "TurboLayout class not found");
+        } else {
+            hookAllConstructors(mTurboLayout, new IMethodHook() {
+                @Override
+                public void after(HookParam param) {
+                    ViewGroup view = (ViewGroup) callMethod(param.getThisObject(), "getDockLayout");
+                    new BlurUtils(view, "security_center_newbox_bg_custom");
+                }
+            });
+        }
 
 
         Method clearTopLineMethod = mTurboaLayout == null ? null : findMethodExactIfExists(
@@ -114,21 +102,15 @@ public class NewBoxBlur extends BaseHook {
             });
         }
 
-        findAndHookMethod(mTurboaLayout, "onAttachedToWindow", new IMethodHook() {
-            @Override
-            public void after(HookParam param) {
-                View view = (View) param.getThisObject();
-                new BlurUtils(view, "security_center_newbox_bg_custom");
-            }
-        });
-
-        findAndHookMethod(mVideoBoxCls, "a", Context.class, boolean.class, new IMethodHook() {
-            @Override
-            public void after(HookParam param) {
-                ViewGroup viewGroup = (ViewGroup) getObjectField(param.getThisObject(), "b");
-                new BlurUtils(viewGroup, "security_center_newbox_bg_custom");
-            }
-        });
+        if (mTurboaLayout != null) {
+            findAndHookMethod(mTurboaLayout, "onAttachedToWindow", new IMethodHook() {
+                @Override
+                public void after(HookParam param) {
+                    View view = (View) param.getThisObject();
+                    new BlurUtils(view, "security_center_newbox_bg_custom");
+                }
+            });
+        }
 
     }
 }
