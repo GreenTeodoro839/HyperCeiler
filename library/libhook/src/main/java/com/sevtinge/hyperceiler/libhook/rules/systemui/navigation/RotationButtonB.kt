@@ -14,6 +14,7 @@ import io.github.lingqiqi5211.ezhooktool.core.callMethod
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getObjectField
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getObjectFieldAs
+import io.github.lingqiqi5211.ezhooktool.xposed.dsl.setIntField
 import io.github.lingqiqi5211.ezhooktool.core.loadClass
 import io.github.lingqiqi5211.ezhooktool.core.java.Constructors
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createAfterHooks
@@ -53,12 +54,15 @@ object RotationButtonB : BaseHook() {
                 ensureRotationObserver(it.thisObject, mContext)
             }
 
-        loadClass($$$"com.android.systemui.navigationbar.views.NavigationBarView$$ExternalSyntheticLambda1").findMethod { name("get") }.createBeforeHook {
-                if (!enable) return@createBeforeHook
+        findClassIfExists("com.android.systemui.navigationbar.views.NavigationBarView", getClassLoader())
+            ?.findMethod { name("updateCurrentRotation") }
+            ?.createAfterHook {
+                if (!enable) return@createAfterHook
 
-                val navigationBarView = it.thisObject.getObjectField("f$0") ?: return@createBeforeHook
+                val navigationBarView = it.thisObject ?: return@createAfterHook
                 val mLightContext =
-                    navigationBarView.getObjectField("mLightContext") as Context
+                    navigationBarView.getObjectField("mLightContext") as? Context
+                        ?: return@createAfterHook
                 val intValue = when (getScreenOrientation(mLightContext)) {
                     0 -> 1
                     1 -> 0
@@ -66,9 +70,9 @@ object RotationButtonB : BaseHook() {
                 }
                 if (intValue == -1) {
                     XposedLog.e(TAG, lpparam.packageName, "Unknown parameters, unable to continue execution, execute the original method!")
-                    return@createBeforeHook
+                    return@createAfterHook
                 }
-                it.result = intValue
+                navigationBarView.setIntField("mCurrentRotation", intValue)
             }
 
         navigationBar.findMethod { name("onRotationProposal") }.createBeforeHook {
@@ -77,10 +81,10 @@ object RotationButtonB : BaseHook() {
                 }
             }
 
-        loadClass($$$"com.android.systemui.shared.rotation.RotationButtonController$$ExternalSyntheticLambda5").findMethod { name("onClick") }.createBeforeHook {
+        loadClass("com.android.systemui.shared.rotation.RotationButtonController\$\$ExternalSyntheticLambda5").findMethod { name("onClick") }.createBeforeHook {
                 if (enable) {
                     val rotationButtonController =
-                        it.thisObject.getObjectField("f$0") ?: return@createBeforeHook
+                        it.thisObject.getObjectField("f\$0") ?: return@createBeforeHook
 
                     rotationButtonController.callMethod(
                         "setRotateSuggestionButtonState",
