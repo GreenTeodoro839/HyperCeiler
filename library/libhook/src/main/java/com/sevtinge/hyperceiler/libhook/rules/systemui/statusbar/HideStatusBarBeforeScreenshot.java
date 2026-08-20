@@ -18,8 +18,6 @@
 */
 package com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar;
 
-import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreAndroidVersion;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +34,7 @@ import io.github.lingqiqi5211.ezhooktool.xposed.common.HookParam;
 public class HideStatusBarBeforeScreenshot extends BaseHook {
 
     private static final String COLLAPSED_STATUS_BAR_CLASS =
-        "com.android.systemui.statusbar.phone.MiuiCollapsedStatusBarFragment";
+        "com.android.systemui.statusbar.phone.MiuiPhoneStatusBarView";
     private static final String ACTION_TAKE_SCREENSHOT = "miui.intent.TAKE_SCREENSHOT";
     private static final String EXTRA_IS_FINISHED = "IsFinished";
     private static final String HOT_RELOAD_VIEW_KEY =
@@ -45,16 +43,14 @@ public class HideStatusBarBeforeScreenshot extends BaseHook {
 
     @Override
     public void init() {
-        if (isMoreAndroidVersion(36)) return;
-
         View restoredView = getHotReloadRuntimeState(HOT_RELOAD_VIEW_KEY, View.class);
         if (restoredView != null) {
             registerScreenshotReceiver(restoredView);
         }
-        hookAllMethods(COLLAPSED_STATUS_BAR_CLASS, "onViewCreated", new IMethodHook() {
+        hookAllMethods(COLLAPSED_STATUS_BAR_CLASS, "onAttachedToWindow", new IMethodHook() {
             @Override
             public void after(HookParam param) {
-                View view = (View) param.getArgs()[0];
+                View view = (View) param.getThisObject();
                 registerScreenshotReceiver(view);
             }
         });
