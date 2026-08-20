@@ -54,22 +54,16 @@ public class UiLockApp extends BaseHook {
     };
     private static final String[] GESTURE_HANDLE_CLASS_CANDIDATES = new String[] {
         "com.android.systemui.navigationbar.gestural.NavigationHandle",
-        "com.android.systemui.navigationbar.gestural.QuickswitchOrientedNavHandle",
-        "com.android.systemui.navigationbar.views.NavigationHandle",
-        "com.android.systemui.navigationbar.gestural.GestureHandleView",
-        "com.android.systemui.navigationbar.gestural.HomeHandle"
+        "com.android.systemui.navigationbar.gestural.QuickswitchOrientedNavHandle"
     };
     private static final String[] NAVIGATION_BAR_CLASS_CANDIDATES = new String[] {
-        "com.android.systemui.navigationbar.views.NavigationBar",
-        "com.android.systemui.navigationbar.NavigationBar"
+        "com.android.systemui.navigationbar.views.NavigationBar"
     };
     private static final String[] APPLICATION_CLASS_CANDIDATES = new String[] {
-        "com.android.systemui.application.impl.SystemUIApplicationImpl",
-        "com.android.systemui.SystemUIApplication"
+        "com.android.systemui.application.impl.SystemUIApplicationImpl"
     };
     private static final String[] LAUNCHER_PROXY_CLASS_CANDIDATES = new String[] {
-        "com.android.systemui.LauncherProxyService$1",
-        "com.android.systemui.recents.LauncherProxyService$1"
+        "com.android.systemui.LauncherProxyService$1"
     };
     private static final String[] TASKBAR_DELEGATE_CLASS_CANDIDATES = new String[] {
         "com.android.systemui.navigationbar.TaskbarDelegate"
@@ -295,7 +289,7 @@ public class UiLockApp extends BaseHook {
             @Override
             public Object intercept(XposedInterface.Chain chain) throws Throwable {
                 Object[] args = chain.getArgs().toArray();
-                if (args.length > 0 && "stopScreenPinning".equals(args[0])) {
+                if (args.length > 1 && "stopScreenPinning".equals(args[1])) {
                     Context context = resolveContext(chain.getThisObject());
                     if (context != null && getLockApp(context) != -1) {
                         XposedLog.d(TAG, "block LauncherProxyService.stopScreenPinning while locked");
