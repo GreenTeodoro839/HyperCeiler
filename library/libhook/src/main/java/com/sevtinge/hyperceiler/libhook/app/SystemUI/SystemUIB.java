@@ -19,6 +19,7 @@
 package com.sevtinge.hyperceiler.libhook.app.SystemUI;
 
 import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.Miui.isPad;
+import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreHyperOSVersion;
 
 import com.hchen.database.HookBase;
 import com.sevtinge.hyperceiler.common.utils.PrefsBridge;
@@ -165,7 +166,10 @@ public class SystemUIB extends BaseLoad {
         }*/
 
         // 灵动舞台
-        initHook(HideStrongToast.INSTANCE, PrefsBridge.getBoolean("system_ui_status_bar_hide_smart_strong_toast"));
+        initHook(
+            HideStrongToast.INSTANCE,
+            PrefsBridge.getBoolean("system_ui_status_bar_hide_smart_strong_toast") && !isMoreHyperOSVersion(4f)
+        );
 
         // 导航栏
         initHook(RotationButtonB.INSTANCE, PrefsBridge.getStringAsInt("system_framework_other_rotation_button_int", 0) != 0);

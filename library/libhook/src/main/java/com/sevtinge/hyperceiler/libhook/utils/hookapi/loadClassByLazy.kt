@@ -19,7 +19,6 @@
 package com.sevtinge.hyperceiler.libhook.utils.hookapi
 
 import io.github.lingqiqi5211.ezhooktool.core.loadClass
-import io.github.lingqiqi5211.ezhooktool.core.loadClassOrNull
 
 // by StarVoyager
 object LazyClass {
@@ -71,8 +70,4 @@ object LazyClass {
         loadClass("com.android.systemui.statusbar.views.MiuiStatusBarClock")
     }
 
-
-    val NewStrongToast by lazy {
-        loadClassOrNull("com.miui.toast.MIUIStrongToast")
-    }
 }
