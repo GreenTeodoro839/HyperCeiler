@@ -98,7 +98,7 @@ object LockOneHundredPoints : BaseHook() {
             }.findMethod {
                 matcher {
                     addInvoke("Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z")
-                    paramCount = 1
+                    paramTypes = listOf("w4.g")
                     returnType = "void"
                 }
             }.single()
@@ -128,4 +128,3 @@ object LockOneHundredPoints : BaseHook() {
         }
     }
 }
-

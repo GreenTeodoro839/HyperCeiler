@@ -93,7 +93,10 @@ object BlurSecurity : BaseHook() {
         requiredMember("BlurSecurity1") {
             it.findMethod {
                 matcher {
-                    addUsingString("game_turbo_box_mode_change")
+                    declaredClass = "com.miui.gamebooster.widget.LightningTextView"
+                    name = "c"
+                    paramCount = 0
+                    returnType = "void"
                 }
             }.single()
         }
@@ -530,4 +533,3 @@ object BlurSecurity : BaseHook() {
     }
 
 }
-
