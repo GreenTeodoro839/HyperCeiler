@@ -18,9 +18,10 @@
  */
 package com.sevtinge.hyperceiler.libhook.rules.milink;
 
-import android.content.Context;
-
 import com.sevtinge.hyperceiler.libhook.base.BaseHook;
+
+import java.lang.reflect.Method;
+import java.util.List;
 
 import io.github.lingqiqi5211.ezhooktool.xposed.common.HookParam;
 import io.github.lingqiqi5211.ezhooktool.xposed.java.IMethodHook;
@@ -28,6 +29,10 @@ import io.github.lingqiqi5211.ezhooktool.xposed.java.IMethodHook;
 public class AllowCameraDevices extends BaseHook {
     @Override
     public void init() {
+        Class<?> rulesConfig = findClassIfExists("com.xiaomi.vtcamera.cloud.RulesConfig");
+        Class<?> appEntityInfo = findClassIfExists("com.xiaomi.camera.companion.AppEntityInfo");
+        if (rulesConfig == null || appEntityInfo == null) return;
+
         IMethodHook hook = new IMethodHook() {
             @Override
             public void before(HookParam param) {
@@ -35,14 +40,12 @@ public class AllowCameraDevices extends BaseHook {
             }
         };
 
-        try {
-            findAndHookMethod("com.xiaomi.vtcamera.cloud.RulesConfig", "isDeviceInAllowList", Context.class, String.class, hook);
-        } catch(Throwable t) {
-            try {
-                findAndHookMethod("com.xiaomi.vtcamera.cloud.RulesConfig", "isDeviceAllowedToBeDiscoverable", Context.class, String.class, String.class, hook);
-            } catch(Throwable ignore) {
-                findAndHookMethod("com.xiaomi.vtcamera.cloud.RulesConfig", "isDeviceAllowed", String.class, hook);
-            }
-        }
+        Method shortAuthorised = findMethodExactIfExists(
+            rulesConfig, "isAuthorised", String.class, int.class, appEntityInfo);
+        Method fullAuthorised = findMethodExactIfExists(
+            rulesConfig, "isAuthorised", String.class, int.class, String.class,
+            List.class, String.class, int.class, long.class, String.class);
+        if (shortAuthorised != null) hookMethod(shortAuthorised, hook);
+        if (fullAuthorised != null) hookMethod(fullAuthorised, hook);
     }
 }
