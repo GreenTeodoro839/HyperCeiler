@@ -27,7 +27,7 @@ public class DisableSound extends BaseHook {
     @Override
     public void init() {
         findAndHookMethod("com.android.nfc.NfcService",
-            "initSoundPool", new IMethodHook() {
+            "playSound", int.class, new IMethodHook() {
             @Override
             public void before(HookParam param) {
                     param.setResult(null);
