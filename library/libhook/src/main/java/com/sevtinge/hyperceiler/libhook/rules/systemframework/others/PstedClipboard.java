@@ -18,10 +18,6 @@
 */
 package com.sevtinge.hyperceiler.libhook.rules.systemframework.others;
 
-import static com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreAndroidVersion;
-
-import android.util.ArraySet;
-
 import com.sevtinge.hyperceiler.libhook.base.BaseHook;
 import io.github.lingqiqi5211.ezhooktool.xposed.java.IMethodHook;
 
@@ -30,29 +26,15 @@ import io.github.lingqiqi5211.ezhooktool.xposed.common.HookParam;
 public class PstedClipboard extends BaseHook {
     @Override
     public void init() {
-
-        if (isMoreAndroidVersion(36)) {
-            findAndHookMethod("com.android.server.clipboard.ClipboardService",
-                "lambda$showAccessNotificationLocked$5",
-                String.class, int.class, ArraySet.class, int.class,
-                new IMethodHook() {
-                    @Override
-                    public void before(HookParam param) {
-                        param.setResult(null);
-                    }
+        findAndHookMethod("com.android.server.clipboard.ClipboardService",
+            "showAccessNotificationLocked",
+            String.class, int.class, int.class,
+            "com.android.server.clipboard.ClipboardService$Clipboard", int.class,
+            new IMethodHook() {
+                @Override
+                public void before(HookParam param) {
+                    param.setResult(false);
                 }
-            );
-        } else {
-            findAndHookMethod("com.android.server.clipboard.ClipboardService",
-                "lambda$showAccessNotificationLocked$4",
-                String.class, int.class, ArraySet.class,
-                new IMethodHook() {
-                    @Override
-                    public void before(HookParam param) {
-                        param.setResult(null);
-                    }
-                }
-            );
-        }
+            });
     }
 }
