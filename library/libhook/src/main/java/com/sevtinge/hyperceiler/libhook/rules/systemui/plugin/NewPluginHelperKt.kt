@@ -19,6 +19,7 @@
 package com.sevtinge.hyperceiler.libhook.rules.systemui.plugin
 
 import android.content.ContextWrapper
+import android.os.Bundle
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
 import com.sevtinge.hyperceiler.libhook.rules.systemui.other.AutoSEffSwitchForSystemUi
 import com.sevtinge.hyperceiler.libhook.rules.systemui.other.AutoSEffSwitchForSystemUi.isSupportFW
@@ -37,7 +38,7 @@ import com.sevtinge.hyperceiler.libhook.rules.systemui.plugin.systemui.QsTileSup
 import com.sevtinge.hyperceiler.libhook.rules.systemui.plugin.systemui.StartCollpasedColumnPress
 import com.sevtinge.hyperceiler.libhook.rules.systemui.plugin.systemui.UnlockCarSicknessTile
 import com.sevtinge.hyperceiler.libhook.rules.systemui.plugin.systemui.VolumeOrQSBrightnessValue
-import com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar.island.FocusNotifLyric
+import com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreHyperOSVersion
 import com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreSmallVersion
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.PluginFactory
 import com.sevtinge.hyperceiler.common.log.XposedLog
@@ -45,6 +46,8 @@ import com.sevtinge.hyperceiler.common.utils.PrefsBridge
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
 import io.github.lingqiqi5211.ezhooktool.core.loadClass
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createAfterHook
+import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createHook
+import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getObjectField
 import java.lang.ref.WeakReference
 
 object NewPluginHelperKt : BaseHook() {
@@ -214,8 +217,8 @@ object NewPluginHelperKt : BaseHook() {
                 XposedLog.d(TAG, lpparam.packageName, "Plugin for sysui NotificationStatPluginImpl loaded.")
 
                 val enabledLoaders = ArrayList<Pair<String, (ClassLoader) -> Unit>>(1)
-                if (PrefsBridge.getBoolean("system_ui_statusbar_music_switch") || PrefsBridge.getBoolean("system_ui_unlock_all_focus")) {
-                    enabledLoaders.add(Pair("FocusNotifLyric", FocusNotifLyric::initLoader))
+                if (PrefsBridge.getBoolean("system_ui_unlock_all_focus")) {
+                    enabledLoaders.add(Pair("UnlockAllFocus", ::initUnlockAllFocus))
                 }
                 loadClassLoaders(componentName.toString(), classLoader, enabledLoaders)
             }
@@ -251,6 +254,36 @@ object NewPluginHelperKt : BaseHook() {
                 // com.miui.keyguard.shortcuts.ShortcutPluginImpl
                 // com.miui.aod.doze.DozeServicePluginImpl
             }
+        }
+    }
+
+    private fun initUnlockAllFocus(classLoader: ClassLoader) {
+        runCatching {
+            loadClass("miui.systemui.notification.NotificationSettingsManager", classLoader).findMethod { name("canShowFocus") }.createHook {
+                returnConstant(true)
+            }
+        }.onFailure {
+            XposedLog.e(TAG, "canShowFocus failed, ${it.message}")
+        }
+        runCatching {
+            loadClass("miui.systemui.notification.NotificationSettingsManager", classLoader).findMethod { name("canCustomFocus") }.createHook {
+                returnConstant(true)
+            }
+        }.onFailure {
+            XposedLog.e(TAG, "canCustomFocus failed, ${it.message}")
+        }
+
+        if (!isMoreHyperOSVersion(3f)) return
+        runCatching {
+            loadClass($$"miui.systemui.notification.auth.AuthManager$AuthServiceCallback$onAuthResult$1", classLoader).findMethod { name("invokeSuspend") }.createHook {
+                before { param ->
+                    val bundle = param.thisObject.getObjectField($$"$authBundle") as Bundle
+                    XposedLog.d(TAG, "authBundle result_code:${bundle.getInt("result_code", 114514)}")
+                    bundle.putInt("result_code", 0)
+                }
+            }
+        }.onFailure {
+            XposedLog.e(TAG, "invokeSuspend failed, ${it.message}")
         }
     }
 

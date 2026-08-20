@@ -31,7 +31,6 @@ import com.sevtinge.hyperceiler.common.utils.PrefsBridge;
 import com.sevtinge.hyperceiler.libhook.appbase.input.InputMethodClassLoaderDispatcher;
 import com.sevtinge.hyperceiler.libhook.appbase.input.InputMethodConfig;
 import com.sevtinge.hyperceiler.libhook.base.BaseLoad;
-import com.sevtinge.hyperceiler.libhook.rules.various.MusicHooks;
 import com.sevtinge.hyperceiler.libhook.rules.various.clipboard.BaiduClipboard;
 import com.sevtinge.hyperceiler.libhook.rules.various.clipboard.SoGouClipboard;
 import com.sevtinge.hyperceiler.libhook.rules.various.clipboard.UnlockIme;
@@ -80,8 +79,6 @@ public class VariousThirdApps extends BaseLoad {
             }
             return;
         }
-
-        initMusicHooks();
     }
 
     private void initInputMethodHooks() {
@@ -100,9 +97,6 @@ public class VariousThirdApps extends BaseLoad {
         initHook(new BaiduClipboard(), enableClipboardHook && isBaiduPackage(mPackageName));
     }
 
-    private void initMusicHooks() {
-        initHook(MusicHooks.INSTANCE, PrefsBridge.getBoolean("system_ui_statusbar_music_switch") && PrefsBridge.getBoolean("system_ui_statusbar_music_show_app"));
-    }
     private Set<String> getEnabledInputMethodPackages(Context context) {
         try {
             if (context == null) {

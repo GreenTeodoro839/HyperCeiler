@@ -167,13 +167,6 @@
                 android:data="https://github.com/qqlittleice/FixMiuiMediaControlPanel" />
         </Preference>
         <Preference
-            android:summary="wuyou-123 | No License"
-            android:title="FocusNotifLyric">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://github.com/wuyou-123/FocusNotifLyric" />
-        </Preference>
-        <Preference
             android:summary="HChenX | GPL-3.0"
             android:title="ForegroundPin">
             <intent

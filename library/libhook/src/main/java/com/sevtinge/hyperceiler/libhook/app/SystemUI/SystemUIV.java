@@ -114,8 +114,6 @@ import com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar.icon.all.Status
 import com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar.icon.all.SwapWiFiAndMobileNetwork;
 import com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar.icon.all.WifiNetworkIndicator;
 import com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar.icon.v.WifiStandard;
-import com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar.island.FocusNotifLyric;
-import com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar.island.HideFakeStatusBar;
 import com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar.island.HideStrongToast;
 import com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar.mobile.DualRowSignalHookV;
 import com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar.mobile.MobilePublicHookV;
@@ -192,12 +190,6 @@ public class SystemUIV extends BaseLoad {
         //         PrefsBridge.getBoolean("system_ui_statusbar_temp_enable"));
         //
         // // initHook(new DisplayHardwareDetailForHyper(), true);
-
-        // 焦点歌词
-        if (PrefsBridge.getBoolean("system_ui_statusbar_music_switch") && isHyperOSVersion(2f)) {
-            initHook(FocusNotifLyric.INSTANCE);
-            initHook(HideFakeStatusBar.INSTANCE, PrefsBridge.getBoolean("system_ui_statusbar_music_hide_clock") && !isPad());
-        }
 
         // 灵动舞台
         initHook(HideStrongToast.INSTANCE, PrefsBridge.getBoolean("system_ui_status_bar_hide_smart_strong_toast"));

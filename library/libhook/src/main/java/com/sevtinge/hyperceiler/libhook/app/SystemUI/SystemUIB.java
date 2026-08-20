@@ -158,12 +158,6 @@ public class SystemUIB extends BaseLoad {
         // 时钟指示器
         initHook(StatusBarClockNew.INSTANCE, PrefsBridge.getBoolean("system_ui_statusbar_clock_all_status_enable"));
 
-        // 焦点歌词
-        /*if (PrefsBridge.getBoolean("system_ui_statusbar_music_switch")) {
-            initHook(FocusNotifLyric.INSTANCE);
-            initHook(HideFakeStatusBar.INSTANCE, PrefsBridge.getBoolean("system_ui_statusbar_music_hide_clock") && !isPad());
-        }*/
-
         // 灵动舞台
         initHook(
             HideStrongToast.INSTANCE,
