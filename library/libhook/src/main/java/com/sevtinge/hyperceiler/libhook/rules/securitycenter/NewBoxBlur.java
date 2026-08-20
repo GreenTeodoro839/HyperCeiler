@@ -25,8 +25,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.sevtinge.hyperceiler.common.log.XposedLog;
 import com.sevtinge.hyperceiler.common.utils.PrefsBridge;
 import com.sevtinge.hyperceiler.libhook.base.BaseHook;
+import java.lang.reflect.Method;
+
 import io.github.lingqiqi5211.ezhooktool.xposed.java.IMethodHook;
 import com.sevtinge.hyperceiler.libhook.utils.api.DisplayUtils;
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.blur.BlurUtils;
@@ -87,15 +90,29 @@ public class NewBoxBlur extends BaseHook {
         });*/
 
 
-        findAndHookMethod(mTurboaLayout, "a", boolean.class, boolean.class, new IMethodHook() {
-            @Override
-            public void after(HookParam param) {
-                ImageView view = (ImageView) getObjectField(param.getThisObject(), "j");
-                GradientDrawable shapeDrawable = new GradientDrawable();
-                shapeDrawable.setColor(Color.TRANSPARENT);
-                view.setImageDrawable(shapeDrawable);
-            }
-        });
+        Method clearTopLineMethod = mTurboaLayout == null ? null : findMethodExactIfExists(
+            mTurboaLayout, "setTvPerformance", boolean.class);
+        if (mTurboaLayout == null || clearTopLineMethod == null) {
+            XposedLog.w(TAG, getPackageName(),
+                "NewToolBoxTopView.setTvPerformance(boolean) not found");
+        } else {
+            hookMethod(clearTopLineMethod, new IMethodHook() {
+                @Override
+                public void after(HookParam param) {
+                    View view = (View) param.getThisObject();
+                    int topLineId = view.getResources().getIdentifier(
+                        "game_turbo_top_line_bg", "id", view.getContext().getPackageName());
+                    if (topLineId == View.NO_ID) return;
+
+                    ImageView topLine = (ImageView) view.findViewById(topLineId);
+                    if (topLine != null) {
+                        GradientDrawable shapeDrawable = new GradientDrawable();
+                        shapeDrawable.setColor(Color.TRANSPARENT);
+                        topLine.setImageDrawable(shapeDrawable);
+                    }
+                }
+            });
+        }
 
         findAndHookMethod(mTurboaLayout, "onAttachedToWindow", new IMethodHook() {
             @Override
