@@ -42,6 +42,8 @@ public class SystemSettingsFragment extends DashboardFragment {
     Preference mMoreNotificationSettings;
     Preference mUsbMode;
     Preference mUsbModeChoose;
+    Preference mInternationalBuild;
+    Preference mMoreVpnTypes;
 
     @Override
     public int getPreferenceScreenResId() {
@@ -58,11 +60,15 @@ public class SystemSettingsFragment extends DashboardFragment {
         mMoreNotificationSettings = findPreference("prefs_key_system_settings_more_notification_settings");
         mUsbMode = findPreference("prefs_key_system_settings_usb_mode");
         mUsbModeChoose = findPreference("prefs_key_system_settings_usb_mode_choose");
+        mInternationalBuild = findPreference("prefs_key_system_settings_international_build");
+        mMoreVpnTypes = findPreference("prefs_key_system_settings_more_vpn_types");
 
         setPreVisible(mAllowNeverSleepScreen, false);
         setPreVisible(mMoreNotificationSettings, false);
         setPreVisible(mUsbMode, false);
         setPreVisible(mUsbModeChoose, false);
+        setPreVisible(mInternationalBuild, false);
+        setPreVisible(mMoreVpnTypes, false);
 
         Bundle args1 = new Bundle();
         mRecommend = new RecommendPreference(requireContext());

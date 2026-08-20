@@ -29,11 +29,9 @@ import com.sevtinge.hyperceiler.libhook.rules.systemsettings.AppsFreezerEnable;
 import com.sevtinge.hyperceiler.libhook.rules.systemsettings.ControlCenterStyle;
 import com.sevtinge.hyperceiler.libhook.rules.systemsettings.EnableSpeedMode;
 import com.sevtinge.hyperceiler.libhook.rules.systemsettings.HyperCeilerSettings;
-import com.sevtinge.hyperceiler.libhook.rules.systemsettings.InternationalBuild;
 import com.sevtinge.hyperceiler.libhook.rules.systemsettings.LinkTurbo;
 import com.sevtinge.hyperceiler.libhook.rules.systemsettings.ModifySystemVersion;
 import com.sevtinge.hyperceiler.libhook.rules.systemsettings.MoreNotificationSettings;
-import com.sevtinge.hyperceiler.libhook.rules.systemsettings.MoreVpnTypes;
 import com.sevtinge.hyperceiler.libhook.rules.systemsettings.NewNFCPage;
 import com.sevtinge.hyperceiler.libhook.rules.systemsettings.NoveltyHaptic;
 import com.sevtinge.hyperceiler.libhook.rules.systemsettings.QuickManageOverlayPermission;
@@ -58,7 +56,6 @@ public class SystemSettingsB extends BaseLoad {
     public void onPackageLoaded() {
         // 首页
         initHook(new HyperCeilerSettings(), PrefsBridge.getStringAsInt("settings_icon", 0) != 0);
-        initHook(new InternationalBuild(), PrefsBridge.getBoolean("system_settings_international_build"));
         initHook(UnlockXiaomiHyperAIEntranceKt.INSTANCE, PrefsBridge.getBoolean("system_settings_unlock_xiaomihyperai_entrance"));
         initHook(new AddGoogleListHeader(), PrefsBridge.getBoolean("system_settings_unlock_google_header"));
 
@@ -69,7 +66,6 @@ public class SystemSettingsB extends BaseLoad {
         initHook(new ViewWifiPasswordHook(), PrefsBridge.getBoolean("system_settings_safe_wifi"));
         initHook(new LinkTurbo(), PrefsBridge.getBoolean("system_settings_linkturbo"));
         initHook(new NewNFCPage(), PrefsBridge.getBoolean("system_settings_new_nfc_page"));
-        initHook(new MoreVpnTypes(), PrefsBridge.getBoolean("system_settings_more_vpn_types"));
 
         // 特色功能
         initHook(UnlockTaplusForSettings.INSTANCE, PrefsBridge.getBoolean("content_extension_unlock_taplus"));
