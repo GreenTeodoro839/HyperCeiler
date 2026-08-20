@@ -22,6 +22,7 @@ import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.sevtinge.hyperceiler.common.log.XposedLog;
 import com.sevtinge.hyperceiler.libhook.base.BaseHook;
 import io.github.lingqiqi5211.ezhooktool.xposed.java.IMethodHook;
 
@@ -37,7 +38,11 @@ public class ScramblePIN extends BaseHook {
 
     @Override
     public void init() {
-        mKeyguardPINView = findClassIfExists("com.android.keyguard.KeyguardPINView");
+        mKeyguardPINView = findClassIfExists("com.android.keyguard.KeyguardPINView", getClassLoader());
+        if (mKeyguardPINView == null) {
+            XposedLog.e(TAG, getLpparam().getPackageName(), "KeyguardPINView is unavailable in the target class loader");
+            return;
+        }
 
         findAndHookMethod(mKeyguardPINView, "onFinishInflate", new IMethodHook() {
             @Override
