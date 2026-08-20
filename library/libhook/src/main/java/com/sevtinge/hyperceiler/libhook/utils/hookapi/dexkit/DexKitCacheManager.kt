@@ -149,7 +149,7 @@ internal object DexKitCacheManager {
                 iDexKit.dexkit(rawBridge)
             } catch (e: ReflectiveOperationException) {
                 throw RuntimeException(e)
-            }
+            } ?: throw NoSuchElementException("DexKit query '$key' matched nothing")
             result = resolveAndCache(baseData, key, classLoader)
         }
 
@@ -178,7 +178,7 @@ internal object DexKitCacheManager {
                 iDexKitList.dexkit(rawBridge)
             } catch (e: ReflectiveOperationException) {
                 throw RuntimeException(e)
-            }
+            } ?: throw NoSuchElementException("DexKit list query '$key' matched nothing")
 
             val serializedList = mutableListOf<String>()
             when (baseDataList) {
