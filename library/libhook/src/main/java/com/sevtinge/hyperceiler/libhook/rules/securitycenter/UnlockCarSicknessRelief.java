@@ -47,7 +47,7 @@ public class UnlockCarSicknessRelief extends BaseHook {
             public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
                 MethodData methodData = bridge.findMethod(FindMethod.create()
                         .matcher(MethodMatcher.create()
-                            .usingStrings("is_support_carsick")
+                            .addInvoke("Landroid/hardware/SensorManager;->getDefaultSensor(I)Landroid/hardware/Sensor;")
                             .returnType(boolean.class)
                             .paramTypes(Context.class)))
                     .singleOrNull();
@@ -77,4 +77,3 @@ public class UnlockCarSicknessRelief extends BaseHook {
         hookMethod(mUnlockCarSicknessRemindTimingMethod, returnConstant(true));
     }
 }
-
