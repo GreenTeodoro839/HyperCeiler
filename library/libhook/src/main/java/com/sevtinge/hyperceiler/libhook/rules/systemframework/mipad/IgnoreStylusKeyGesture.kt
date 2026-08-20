@@ -19,32 +19,20 @@
 package com.sevtinge.hyperceiler.libhook.rules.systemframework.mipad
 
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
-import com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreAndroidVersion
 import io.github.lingqiqi5211.ezhooktool.core.findAllMethods
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createHooks
 
 object IgnoreStylusKeyGesture : BaseHook() {
     override fun init() {
-        if (isMoreAndroidVersion(36)) {
-            val clazzMiuiStylusPageKeyListener =
-                findClass("com.miui.server.input.stylus.MiuiStylusShortcutManager")
-            val methodNames =
-                setOf("needInterceptBeforeDispatching", "shouldInterceptKey")
+        val clazzMiuiStylusShortcutManager =
+            findClassIfExists("com.miui.server.input.stylus.MiuiStylusShortcutManager") ?: return
+        val methodNames =
+            setOf("needInterceptBeforeDispatching", "shouldInterceptKey")
 
-            clazzMiuiStylusPageKeyListener.findAllMethods { filter { name in methodNames } }.createHooks {
-                returnConstant(false)
-            }
-        } else {
-            val clazzMiuiStylusPageKeyListener =
-                findClassIfExists("com.miui.server.input.stylus.MiuiStylusPageKeyListener")
-                    ?: findClass("com.miui.server.stylus.MiuiStylusPageKeyListener")
-            val methodNames =
-                setOf("isPageKeyEnable", "needInterceptBeforeDispatching", "shouldInterceptKey")
-
-            clazzMiuiStylusPageKeyListener.findAllMethods { filter { name in methodNames } }.createHooks {
-                returnConstant(false)
-            }
+        clazzMiuiStylusShortcutManager.findAllMethods {
+            filter { name in methodNames }
+        }.createHooks {
+            returnConstant(false)
         }
-
     }
 }
