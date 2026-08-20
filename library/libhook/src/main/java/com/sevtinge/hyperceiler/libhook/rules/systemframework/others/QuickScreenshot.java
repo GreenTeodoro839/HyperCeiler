@@ -26,7 +26,7 @@ import io.github.lingqiqi5211.ezhooktool.xposed.common.HookParam;
 public class QuickScreenshot extends BaseHook {
     @Override
     public void init() {
-        findAndHookMethod("com.android.server.policy.PhoneWindowManager", "getScreenshotChordLongPressDelay", new IMethodHook() {
+        findAndHookMethod("com.android.server.input.KeyGestureController", "getScreenshotChordLongPressDelay", new IMethodHook() {
             @Override
             public void before(HookParam param){
                 param.setResult(0L);
