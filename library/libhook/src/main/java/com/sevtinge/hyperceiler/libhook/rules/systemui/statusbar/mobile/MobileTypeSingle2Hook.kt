@@ -48,8 +48,6 @@ import com.sevtinge.hyperceiler.libhook.utils.hookapi.StateFlowHelper.setStateFl
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.systemui.DataSimFlowProxy
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.systemui.KotlinJob
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.systemui.MiuiStub
-import com.sevtinge.hyperceiler.libhook.utils.hookapi.systemui.MobileClass.mOperatorConfig
-import com.sevtinge.hyperceiler.libhook.utils.hookapi.systemui.MobileClass.miuiCellularIconVM
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.systemui.MobileClass.miuiMobileIconBinder
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.systemui.MobileClass.mobileUiAdapter
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.systemui.MobileClass.modernStatusBarMobileView
@@ -73,6 +71,7 @@ import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getBooleanField
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getIntField
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getObjectField
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getObjectFieldAs
+import io.github.lingqiqi5211.ezhooktool.xposed.dsl.setBooleanField
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.setAdditionalInstanceField
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.setObjectField
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
@@ -88,6 +87,7 @@ import java.util.function.Consumer
 
 object MobileTypeSingle2Hook : BaseHook() {
     private const val LAST_BOUND_VIEW_MODEL_KEY = "mobile_type_single2_last_bound_vm"
+    private const val VIEW_MODEL_CONFIGURED_KEY = "mobile_type_single2_vm_configured"
     private const val DATA_SIM_CONTEXT_KEY = "MobileTypeSingle2Hook.dataSimContext"
 
     private val showNameFlowProxy = DataSimFlowProxy("")
@@ -155,78 +155,14 @@ object MobileTypeSingle2Hook : BaseHook() {
             }
         }
 
-        Constructors.find(miuiCellularIconVM).first().createAfterHook { param ->
-            val viewModel = param.thisObject
-            val interactor = param.args[1]
-            val miuiInteractor = param.args[2]
-
-            viewModel.setAdditionalInstanceField("interactor", interactor)
-            viewModel.setObjectField("wifiAvailable", miuiInteractor?.getObjectField("wifiAvailable"))
-
-            val subId = runCatching {
-                miuiInteractor?.getObjectFieldAs<Int>("subId")
-            }.getOrNull() ?: runCatching {
-                interactor?.getObjectFieldAs<Int>("subId")
-            }.getOrNull() ?: runCatching {
-                viewModel.getObjectFieldAs<Int>("subId")
-            }.getOrNull() ?: return@createAfterHook
-
-            val slotIndex = SubscriptionManager.getSlotIndex(subId)
-            if (isEnableDouble) {
-                viewModel.getObjectField("showName")?.let { originalFlow ->
-                    showNameFlowProxy.setupForSlot(slotIndex, subId, originalFlow, MobileViewHelper::isSingleSimMode)
-                    if (slotIndex == 0) {
-                        viewModel.setObjectField("showName", showNameFlowProxy.proxy!!)
-                    }
-                }
-                if (!hideIndicator) {
-                    viewModel.getObjectField("inOutVisible")?.let { originalFlow ->
-                        inOutVisibleProxy.setupForSlot(slotIndex, subId, originalFlow, MobileViewHelper::isSingleSimMode)
-                        if (slotIndex == 0) {
-                            viewModel.setObjectField("inOutVisible", inOutVisibleProxy.proxy!!)
-                        }
-                    }
-                    viewModel.getObjectField("inOutResId")?.let { originalFlow ->
-                        inOutResIdProxy.setupForSlot(slotIndex, subId, originalFlow, MobileViewHelper::isSingleSimMode)
-                        if (slotIndex == 0) {
-                            viewModel.setObjectField("inOutResId", inOutResIdProxy.proxy!!)
-                        }
-                    }
-                }
-                viewModel.getObjectField("mobileTypeSingleVisible")?.let { originalFlow ->
-                    mobileTypeSingleVisibleProxy.setupForSlot(slotIndex, subId, originalFlow, MobileViewHelper::isSingleSimMode)
-                    if (slotIndex == 0) {
-                        viewModel.setObjectField("mobileTypeSingleVisible", mobileTypeSingleVisibleProxy.proxy!!)
-                    }
-                }
-                viewModel.getObjectField("mobileTypeVisible")?.let { originalFlow ->
-                    mobileTypeVisibleProxy.setupForSlot(slotIndex, subId, originalFlow, MobileViewHelper::isSingleSimMode)
-                    if (slotIndex == 0) {
-                        viewModel.setObjectField("mobileTypeVisible", mobileTypeVisibleProxy.proxy!!)
-                    }
-                }
-            }
-
-            registerMobileStateCollectors(
-                viewModel,
-                interactor,
-                subId,
-                slotIndex
-            )
-
-            if (isEnableDouble) {
-                syncDataSimProxiesNow()
-                registerDataSimBroadcast()
-            }
-            scheduleRefreshBoundViews()
-        }
-
         modernStatusBarMobileView.findAllMethods { name("constructAndBind") }
             .forEach { method ->
                 method.createInterceptHook { chain ->
+                    val viewModel = resolveConstructAndBindViewModel(chain.args.toList())
+                        ?: return@createInterceptHook chain.proceed()
+                    configureMobileViewModel(viewModel)
                     val result = chain.proceed()
                     val rootView = result as? ViewGroup ?: return@createInterceptHook result
-                    val viewModel = resolveConstructAndBindViewModel(chain.args.toList()) ?: return@createInterceptHook result
                     bindConstructedMobileViewIfNeeded(rootView, viewModel)
                     result
                 }
@@ -250,9 +186,75 @@ object MobileTypeSingle2Hook : BaseHook() {
     }
 
     private fun showMobileTypeSingle() {
-        mOperatorConfig.constructors[0].createAfterHook {
-            it.thisObject.setObjectField("showMobileDataTypeSingle", true)
+        val operatorPolicyClass =
+            findClassIfExists("com.android.systemui.MiuiOperatorCustomizedPolicy", getClassLoader())
+                ?: return
+        operatorPolicyClass.findMethod { name("getMiuiOperatorConfig") }.createAfterHook { param ->
+            param.result?.setBooleanField("showMobileDataTypeSingle", true)
         }
+    }
+
+    private fun configureMobileViewModel(viewModel: Any) {
+        val configured = runCatching {
+            viewModel.getAdditionalInstanceFieldAs<Any>(VIEW_MODEL_CONFIGURED_KEY) != null
+        }.getOrDefault(false)
+        if (configured) return
+
+        val interactor = viewModel.callMethodOrNull("getOriginIconInteractor") ?: return
+        val subId = runCatching {
+            interactor.callMethodAs<Int>("getSubscriptionId")
+        }.getOrNull() ?: return
+        viewModel.setAdditionalInstanceField(VIEW_MODEL_CONFIGURED_KEY, true)
+        viewModel.setAdditionalInstanceField("interactor", interactor)
+
+        val slotIndex = SubscriptionManager.getSlotIndex(subId)
+        if (isEnableDouble) {
+            viewModel.getObjectField("showName")?.let { originalFlow ->
+                showNameFlowProxy.setupForSlot(slotIndex, subId, originalFlow, MobileViewHelper::isSingleSimMode)
+                if (slotIndex == 0) {
+                    viewModel.setObjectField("showName", showNameFlowProxy.proxy!!)
+                }
+            }
+            if (!hideIndicator) {
+                viewModel.getObjectField("inOutVisible")?.let { originalFlow ->
+                    inOutVisibleProxy.setupForSlot(slotIndex, subId, originalFlow, MobileViewHelper::isSingleSimMode)
+                    if (slotIndex == 0) {
+                        viewModel.setObjectField("inOutVisible", inOutVisibleProxy.proxy!!)
+                    }
+                }
+                viewModel.getObjectField("inOutResId")?.let { originalFlow ->
+                    inOutResIdProxy.setupForSlot(slotIndex, subId, originalFlow, MobileViewHelper::isSingleSimMode)
+                    if (slotIndex == 0) {
+                        viewModel.setObjectField("inOutResId", inOutResIdProxy.proxy!!)
+                    }
+                }
+            }
+            viewModel.getObjectField("mobileTypeSingleVisible")?.let { originalFlow ->
+                mobileTypeSingleVisibleProxy.setupForSlot(slotIndex, subId, originalFlow, MobileViewHelper::isSingleSimMode)
+                if (slotIndex == 0) {
+                    viewModel.setObjectField("mobileTypeSingleVisible", mobileTypeSingleVisibleProxy.proxy!!)
+                }
+            }
+            viewModel.getObjectField("mobileTypeVisible")?.let { originalFlow ->
+                mobileTypeVisibleProxy.setupForSlot(slotIndex, subId, originalFlow, MobileViewHelper::isSingleSimMode)
+                if (slotIndex == 0) {
+                    viewModel.setObjectField("mobileTypeVisible", mobileTypeVisibleProxy.proxy!!)
+                }
+            }
+        }
+
+        registerMobileStateCollectors(
+            viewModel,
+            interactor,
+            subId,
+            slotIndex
+        )
+
+        if (isEnableDouble) {
+            syncDataSimProxiesNow()
+            registerDataSimBroadcast()
+        }
+        scheduleRefreshBoundViews()
     }
 
     private fun unwrapCellProviderViewModel(viewModel: Any?): Any? {
