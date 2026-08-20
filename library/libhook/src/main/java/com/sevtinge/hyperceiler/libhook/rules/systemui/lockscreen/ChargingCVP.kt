@@ -25,14 +25,12 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import android.os.PowerManager
-import android.util.ArrayMap
 import android.widget.TextView
 import com.sevtinge.hyperceiler.common.utils.PrefsBridge
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
 import io.github.lingqiqi5211.ezhooktool.core.callMethod
 import io.github.lingqiqi5211.ezhooktool.core.callStaticMethod
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
-import io.github.lingqiqi5211.ezhooktool.xposed.common.HookParam
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createHook
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createHooks
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getObjectFieldOrNull
@@ -86,13 +84,15 @@ object ChargingCVP : BaseHook() {
         }
 
 
-        // 修改底部文本信息
-        findClassIfExists("com.miui.charge.ChargeUtils")?: findClass("com.android.keyguard.charge.ChargeUtils").findMethod { name("getChargingHintText"); paramCount(3) }
+        // 修改底部充电提示（类型 3）
+        findClass("com.android.systemui.keyguard.KeyguardIndicationRotateTextViewController")
+            .findMethod { name("updateIndication"); paramCount(3) }
             .createHook {
-                after { param ->
-                    param.result = param.result?.let {
-                        "${getTemp()}$it\n${getCVP()}"
-                    }
+                before { param ->
+                    if (param.args[0] != 3) return@before
+                    val indication = param.args[1] ?: return@before
+                    val message = indication.getObjectFieldOrNull("mMessage") ?: return@before
+                    indication.setObjectField("mMessage", "${getTemp()}$message\n${getCVP()}")
                 }
             }
 
@@ -118,19 +118,6 @@ object ChargingCVP : BaseHook() {
             }
             val handler = Handler(textView.context.mainLooper)
             val runnable = object : Runnable {
-                val clazzMiuiDependency =
-                    findClass("com.miui.systemui.MiuiDependency")
-                val clazzMiuiChargeController =
-                    findClass("com.miui.charge.MiuiChargeController")
-                val sDependency =
-                    clazzMiuiDependency.getStaticObjectFieldOrNull("sDependency")!!
-                val mProviders =
-                    sDependency.getObjectFieldOrNull("mProviders") as ArrayMap<*, *>
-                val mMiuiChargeControllerProvider = mProviders[clazzMiuiChargeController]!!
-                val instanceMiuiChargeController = mMiuiChargeControllerProvider
-                        .getObjectFieldOrNull("f$0")!!
-                        .callMethod("get")!!
-
                 override fun run() {
                     doUpdateForHyperOS()
                     handler.postDelayed(
@@ -140,28 +127,8 @@ object ChargingCVP : BaseHook() {
                 }
 
                 fun doUpdateForHyperOS() {
-                    val mBatteryStatus =
-                        instanceMiuiChargeController.getObjectFieldOrNull("mBatteryStatus")!!
-                    val level = mBatteryStatus.getObjectFieldOrNull("level")
-                    val plugged = mBatteryStatus.getObjectFieldOrNull("plugged") as Int
-                    val isPluggedIn =
-                        mBatteryStatus.callMethod("isPluggedIn", plugged)
-                    val mContext =
-                        instanceMiuiChargeController.getObjectFieldOrNull("mContext")
-                    val clazzChargeUtils =
-                        findClass("com.miui.charge.ChargeUtils", lpparam.classLoader)
-                    val chargingHintText =
-                        callStaticMethod(
-                            clazzChargeUtils,
-                            "getChargingHintText",
-                            level,
-                            isPluggedIn,
-                            mContext
-                        )
-                    keyguardIndicationController.setObjectField("mComputePowerIndication", chargingHintText)
                     keyguardIndicationController.callMethod(
                         "updateDeviceEntryIndication",
-                        null,
                         false
                     )
                 }
