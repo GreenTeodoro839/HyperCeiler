@@ -88,7 +88,8 @@
             android:defaultValue="false"
             android:key="prefs_key_system_ui_control_center_redirect_notice"
             android:summary="@string/system_ui_control_center_redirect_notice_desc"
-            android:title="@string/system_ui_control_center_redirect_notice" />
+            android:title="@string/system_ui_control_center_redirect_notice"
+            app:isPreferenceVisible="false" />
 
         <SwitchPreference
             android:defaultValue="false"
@@ -118,7 +119,8 @@
             android:defaultValue="false"
             android:key="prefs_key_system_ui_control_center_notification_disable_transparent"
             android:summary="@string/system_ui_control_center_notification_disable_transparent_desc"
-            android:title="@string/system_ui_control_center_notification_disable_transparent" />
+            android:title="@string/system_ui_control_center_notification_disable_transparent"
+            app:isPreferenceVisible="false" />
 
     </PreferenceCategory>
 

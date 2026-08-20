@@ -124,7 +124,6 @@ public class SystemUIB extends BaseLoad {
         initHook(NotificationShowOnKeyguard.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_unlock_notification_restrict"));
         initHook(KeepNotification.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_keep_notification"));
         initHook(new ScramblePIN(), PrefsBridge.getBoolean("system_ui_lock_screen_scramble_pin"));
-        initHook(AllowThirdLockScreenUseFace.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_allow_third_face"));
         initHook(new DisableUnlockByBleToast(), PrefsBridge.getBoolean("system_ui_lock_screen_disable_unlock_by_ble_toast"));
         initHook(LockScreenDoubleTapToSleep.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_double_lock"));
 
@@ -181,10 +180,8 @@ public class SystemUIB extends BaseLoad {
         initHook(AutoDismissExpandedPopupsHook.INSTANCE, PrefsBridge.getBoolean("system_ui_control_center_auto_clean_expand_notification"));
         initHook(ExpandNotificationKt.INSTANCE, !PrefsBridge.getStringSet("system_ui_control_center_expand_notification").isEmpty());
         initHook(new UnimportantNotification(), PrefsBridge.getBoolean("system_ui_control_center_unimportant_notification"));
-        initHook(RedirectToNotificationChannelSetting.INSTANCE, PrefsBridge.getBoolean("system_ui_control_center_redirect_notice"));
         initHook(new MuteVisibleNotifications(), PrefsBridge.getBoolean("system_ui_control_center_mute_visible_notice"));
         initHook(new ZenModeFix(), PrefsBridge.getBoolean("system_ui_control_center_zen_fix"));
-        initHook(new DisableTransparent(), PrefsBridge.getBoolean("system_ui_control_center_notification_disable_transparent"));
         initHook(ControlCenterStyle.INSTANCE, PrefsBridge.getBoolean("system_control_center_unlock_old"));
         initHook(CustomCarrierText.INSTANCE, PrefsBridge.getStringAsInt("system_ui_control_center_hide_operator", 0) != 0);
         initHook(new NotificationColor(), PrefsBridge.getBoolean("system_ui_control_center_opt_notification_element_background_color"));

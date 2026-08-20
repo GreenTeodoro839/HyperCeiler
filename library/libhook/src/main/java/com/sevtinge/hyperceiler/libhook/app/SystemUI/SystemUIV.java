@@ -151,12 +151,9 @@ public class SystemUIV extends BaseLoad {
         initHook(LockScreenDoubleTapToSleep.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_double_lock"));
         initHook(NotificationShowOnKeyguard.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_unlock_notification_restrict"));
         initHook(KeepNotification.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_keep_notification"));
-        initHook(HideLockscreenZenMode.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_not_disturb_mode"));
         initHook(HideLockScreenHint.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_unlock_tip"));
         initHook(HideLockScreenStatusBar.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_hide_status_bar"));
-        initHook(AllowThirdLockScreenUseFace.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_allow_third_face"));
         initHook(new DisableUnlockByBleToast(), PrefsBridge.getBoolean("system_ui_lock_screen_disable_unlock_by_ble_toast"));
-        initHook(new LinkageAnimCustomer(), PrefsBridge.getBoolean("system_ui_lock_screen_linkage_anim"));
         initHook(BlurButton.INSTANCE, PrefsBridge.getBoolean("system_ui_lock_screen_blur_button") && !isMoreSmallVersion(200, 2f));
 
         // 状态栏图标
@@ -219,7 +216,6 @@ public class SystemUIV extends BaseLoad {
         initHook(new BlurEnable(), PrefsBridge.getBoolean("system_ui_control_center_statusbar_blur"));
         initHook(ExpandNotificationKt.INSTANCE, !PrefsBridge.getStringSet("system_ui_control_center_expand_notification").isEmpty());
         initHook(AutoDismissExpandedPopupsHook.INSTANCE, PrefsBridge.getBoolean("system_ui_control_center_auto_clean_expand_notification"));
-        initHook(new HideDelimiter(), PrefsBridge.getStringAsInt("system_ui_control_center_hide_operator", 0) != 0);
         initHook(new GmsTile(), PrefsBridge.getBoolean("security_center_gms_open"));
         initHook(new TaplusTile(), PrefsBridge.getBoolean("security_center_taplus"));
         initHook(new ReduceBrightColorsTile(), PrefsBridge.getBoolean("security_center_reduce_bright_colors_tile"));
@@ -238,12 +234,10 @@ public class SystemUIV extends BaseLoad {
         initHook(new QSGrid(), PrefsBridge.getBoolean("system_control_center_old_enable"));
         initHook(new QQSGrid(), PrefsBridge.getBoolean("system_control_center_old_enable"));
         initHook(new AutoCollapse(), PrefsBridge.getBoolean("system_ui_control_auto_close"));
-        initHook(RedirectToNotificationChannelSetting.INSTANCE, PrefsBridge.getBoolean("system_ui_control_center_redirect_notice"));
         initHook(ControlCenterStyle.INSTANCE, PrefsBridge.getBoolean("system_control_center_unlock_old"));
         initHook(NotificationImportanceHyperOSFix.INSTANCE, PrefsBridge.getBoolean("system_settings_more_notification_settings"));
         initHook(new MoreNotificationSettings(), PrefsBridge.getBoolean("system_settings_more_notification_settings"));
         initHook(new FixTilesList(), PrefsBridge.getBoolean("system_ui_control_center_fix_tiles_list"));
-        initHook(new DisableTransparent(), PrefsBridge.getBoolean("system_ui_control_center_notification_disable_transparent"));
         initHook(new DisableDeviceManaged(), PrefsBridge.getBoolean("system_ui_control_center_disable_device_managed"));
         initHook(new RemoveNotifNumLimit(), PrefsBridge.getBoolean("system_ui_control_center_remove_notif_num_limit"));
         initHook(new NotificationColor(), PrefsBridge.getBoolean("system_ui_control_center_opt_notification_element_background_color"));

@@ -38,6 +38,8 @@ import fan.preference.SeekBarPreferenceCompat;
 public class ControlCenterSettings extends DashboardFragment {
 
     Preference mExpandNotification;
+    Preference mRedirectNotice;
+    Preference mDisableTransparent;
     RecommendPreference mRecommend;
 
     @Override
@@ -48,6 +50,10 @@ public class ControlCenterSettings extends DashboardFragment {
     @Override
     public void initPrefs() {
         mExpandNotification = findPreference("prefs_key_system_ui_control_center_expand_notification");
+        mRedirectNotice = findPreference("prefs_key_system_ui_control_center_redirect_notice");
+        mDisableTransparent = findPreference("prefs_key_system_ui_control_center_notification_disable_transparent");
+        setPreVisible(mRedirectNotice, false);
+        setPreVisible(mDisableTransparent, false);
 
         mExpandNotification.setOnPreferenceClickListener(
                 preference -> {

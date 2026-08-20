@@ -36,6 +36,7 @@ public class LockScreenSettings extends DashboardFragment {
     SwitchPreference mChangeCV; // 显示充电动画
     SwitchPreference mAnim; // 联动动画
     SwitchPreference mHideZenMode; // 隐藏勿扰模式通知
+    SwitchPreference mAllowThirdFace; // 允许第三方锁屏使用人脸
     DropDownPreference mHideLeftButtonNew; // 左侧按钮自定义
 
     @Override
@@ -51,10 +52,11 @@ public class LockScreenSettings extends DashboardFragment {
         mChangeCV = findPreference("prefs_key_system_ui_lock_screen_show_charging_cv");
         mAnim = findPreference("prefs_key_system_ui_lock_screen_linkage_anim");
         mHideZenMode = findPreference("prefs_key_system_ui_lock_screen_not_disturb_mode");
+        mAllowThirdFace = findPreference("prefs_key_system_ui_lock_screen_allow_third_face");
 
-        if (isMoreHyperOSVersion(3f)) {
-            setFuncHint(mHideZenMode, 1);
-        }
+        setPreVisible(mHideZenMode, false);
+        setPreVisible(mAllowThirdFace, false);
+        setPreVisible(mAnim, false);
 
         if (isPad()) {
             setFuncHint(mHideLeftButtonNew, 1);
@@ -62,9 +64,6 @@ public class LockScreenSettings extends DashboardFragment {
             setFuncHint(mBlurButton, 1);
         } else if (isMoreHyperOSVersion(3f)) {
             setPreVisible(mHideLeftButtonNew, false);
-            setPreVisible(mHideRightButton, false);
-            setFuncHint(mChangeCV, 1);
-            setFuncHint(mAnim, 1);
         } else if (isMoreSmallVersion(200, 2f)) {
             setFuncHint(mHideLeftButtonNew, 2);
             setFuncHint(mHideRightButton, 2);
