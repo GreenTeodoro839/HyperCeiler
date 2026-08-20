@@ -61,27 +61,17 @@ object UnlockLeica : BaseHook() {
     private val unlockMethod1 by lazy<Method> {
         requiredMember("uM1") {
             // 6.x
-            // 6.2 已合并方法，所以改回最初改颜色的方法
-            it.findMethod {
+            it.findClass {
                 matcher {
-                    declaredClass {
-                        usingEqStrings("pref_qc_camera_sharpness_key", "pref_tint_color")
-                    }
-
-                    if (is63Camera && !is64Camera) {
-                        // 相机 6.3.005670.0
-                        addInvoke("Landroid/content/Context;->getColor(I)I")
-                    } else {
-                        addInvoke("Landroid/app/Application;->getColor(I)I")
-                    }
-
-                    modifiers = Modifier.STATIC or Modifier.PUBLIC
-                    returnType = "int"
+                    className = "Je.c"
                 }
-                // 因为不知道为什么 DexKit 用 addCaller 筛不出 boolean E6.d.k1() 这种没有 modifiers 的方法，就只能这么写了
-            }.single().invokes.last { get ->
-                get.returnType?.name == "boolean" && get.paramCount == 0
-            }
+            }.findMethod {
+                matcher {
+                    name = "h2"
+                    paramCount = 0
+                    returnType = "boolean"
+                }
+            }.single()
         }
     }
 
@@ -201,4 +191,3 @@ object UnlockLeica : BaseHook() {
         if (c.isLetter()) (c.code - 1).toChar() else c
     }.joinToString("")
 }
-
