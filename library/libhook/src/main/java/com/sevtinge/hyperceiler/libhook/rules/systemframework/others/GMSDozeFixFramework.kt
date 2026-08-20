@@ -222,10 +222,8 @@ object GMSDozeFixFramework : BaseHook() {
         }
 
         try {
-            val useDataWhiteListField = clazz.findField {
-                name("mUseDataWhiteList")
-            }.apply {
-                isAccessible = true
+            val getUseDataWhiteListMethod = clazz.findMethod {
+                name("getUseDataWhiteList")
             }
             val isInWhiteListMethod = clazz.findMethod {
                 name("isInWhiteList")
@@ -233,11 +231,11 @@ object GMSDozeFixFramework : BaseHook() {
             isInWhiteListMethod.createInterceptHook { chain ->
                 try {
                     @Suppress("UNCHECKED_CAST")
-                    val whiteList = useDataWhiteListField.get(chain.thisObject)
+                    val whiteList = getUseDataWhiteListMethod.invoke(chain.thisObject)
                         as? MutableSet<String>
                     whiteList?.add(GMS_PACKAGE_NAME)
                 } catch (e: Exception) {
-                    XposedLog.e(TAG, packageName, "Failed to modify mUseDataWhiteList", e)
+                    XposedLog.e(TAG, packageName, "Failed to modify use-data whitelist", e)
                 }
                 chain.proceed()
             }
