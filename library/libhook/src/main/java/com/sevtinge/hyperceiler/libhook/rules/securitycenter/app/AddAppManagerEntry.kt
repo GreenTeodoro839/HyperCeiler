@@ -26,7 +26,6 @@ import android.view.MenuItem
 import com.sevtinge.hyperceiler.libhook.R
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
-import io.github.lingqiqi5211.ezhooktool.core.loadClass
 import io.github.lingqiqi5211.ezhooktool.xposed.EzXposed
 import io.github.lingqiqi5211.ezhooktool.xposed.EzXposed.appContext
 import io.github.lingqiqi5211.ezhooktool.xposed.EzXposed.initAppContext
@@ -43,7 +42,8 @@ object AddAppManagerEntry : BaseHook() {
     }
 
     override fun init() {
-        val clazzAppManagerMainActivity = loadClass("com.miui.appmanager.AppManagerMainActivity")
+        val clazzAppManagerMainActivity =
+            findClassIfExists("com.miui.appmanager.AppManagerMainActivity") ?: return
         clazzAppManagerMainActivity.findMethod { name("onCreateOptionsMenu") }
             .createHook {
                 after {
@@ -53,7 +53,7 @@ object AddAppManagerEntry : BaseHook() {
                     )
                     menuItem.intent = Intent(Intent.ACTION_MAIN).setClassName(
                         "com.android.settings",
-                        "com.android.settings.applications.ManageApplications"
+                        "com.android.settings.Settings\$ManageApplicationsActivity"
                     )
                     menuItem.setIcon(idDrawableIconSettings)
                     menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)

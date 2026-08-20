@@ -27,6 +27,9 @@ import io.github.lingqiqi5211.ezhooktool.xposed.java.IMethodHook;
 import io.github.lingqiqi5211.ezhooktool.xposed.common.HookParam;
 
 public class RunningServices extends BaseHook {
+    private static final String RUNNING_SERVICES_FRAGMENT =
+        "com.android.settings.applications.RunningServices";
+
     @Override
     public void init() {
         findAndHookMethod("com.android.settings.SettingsActivity",
@@ -38,9 +41,22 @@ public class RunningServices extends BaseHook {
                     ComponentName componentName = intent.getComponent();
                     if (componentName != null) {
                         String className = componentName.getClassName();
-                        if ("com.android.settings.RunningServices".equals(className)) {
-                            param.setResult("com.android.settings.applications.RunningServices");
+                        if ("com.android.settings.Settings$RunningServicesActivity".equals(className)) {
+                            param.setResult(RUNNING_SERVICES_FRAGMENT);
                         }
+                    }
+                }
+            }
+        );
+
+        findAndHookMethod("com.android.settings.SettingsActivity",
+            "isValidFragment", String.class,
+            new IMethodHook() {
+                @Override
+                public void after(HookParam param) {
+                    if (Boolean.FALSE.equals(param.getResult())
+                        && RUNNING_SERVICES_FRAGMENT.equals(param.getArgs()[0])) {
+                        param.setResult(true);
                     }
                 }
             }

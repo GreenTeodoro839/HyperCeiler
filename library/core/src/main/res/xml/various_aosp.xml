@@ -32,7 +32,7 @@
 
         <Preference android:title="@string/various_open_aosp_running_services">
             <intent
-                android:targetClass="com.android.settings.RunningServices"
+                android:targetClass="com.android.settings.Settings$RunningServicesActivity"
                 android:targetPackage="com.android.settings" />
         </Preference>
 
@@ -44,7 +44,7 @@
 
         <Preference android:title="@string/various_open_aosp_app_manage_title">
             <intent
-                android:targetClass="com.android.settings.applications.ManageApplications"
+                android:targetClass="com.android.settings.Settings$ManageApplicationsActivity"
                 android:targetPackage="com.android.settings" />
         </Preference>
 
