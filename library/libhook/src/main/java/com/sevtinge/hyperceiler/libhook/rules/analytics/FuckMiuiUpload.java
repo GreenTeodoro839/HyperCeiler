@@ -28,12 +28,9 @@ import com.sevtinge.hyperceiler.libhook.utils.hookapi.dexkit.IDexKit;
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.dexkit.IDexKitList;
 
 import org.luckypray.dexkit.DexKitBridge;
-import org.luckypray.dexkit.query.FindClass;
 import org.luckypray.dexkit.query.FindMethod;
-import org.luckypray.dexkit.query.matchers.ClassMatcher;
 import org.luckypray.dexkit.query.matchers.MethodMatcher;
 import org.luckypray.dexkit.result.BaseDataList;
-import org.luckypray.dexkit.result.ClassData;
 import org.luckypray.dexkit.result.MethodData;
 import org.luckypray.dexkit.result.MethodDataList;
 import org.luckypray.dexkit.result.base.BaseData;
@@ -47,8 +44,6 @@ import io.github.lingqiqi5211.ezhooktool.xposed.common.HookParam;
 public class FuckMiuiUpload extends BaseHook {
 
     private List<Method> mUsageJsonProcessers;
-
-    private Class<?> mNetworkUtil;
 
     private Method mNetworkA;
     private Method mNetworkB;
@@ -73,23 +68,14 @@ public class FuckMiuiUpload extends BaseHook {
             }
         });
 
-        mNetworkUtil = requiredMember("NetworkUtil", new IDexKit() {
-            @Override
-            public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
-                ClassData clazzData = bridge.findClass(FindClass.create()
-                    .matcher(ClassMatcher.create()
-                        .usingStrings("NetworkUtil")
-                    )).singleOrNull();
-                return clazzData;
-            }
-        });
-
         mNetworkA = requiredMember("NetworkA", new IDexKit() {
             @Override
             public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
                 MethodData methodData = bridge.findMethod(FindMethod.create()
                     .matcher(MethodMatcher.create()
-                        .declaredClass(mNetworkUtil)
+                        .addInvoke(MethodMatcher.create()
+                            .usingStrings("getNetState networkType:")
+                            .paramTypes(Context.class))
                         .paramTypes(Context.class)
                         .returnType(int.class)
                     )).singleOrNull();
@@ -102,7 +88,7 @@ public class FuckMiuiUpload extends BaseHook {
             public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
                 MethodData methodData = bridge.findMethod(FindMethod.create()
                     .matcher(MethodMatcher.create()
-                        .declaredClass(mNetworkUtil)
+                        .usingStrings("getNetworkState error")
                         .paramTypes(Context.class)
                         .returnType(String.class)
                     )).singleOrNull();
@@ -115,7 +101,7 @@ public class FuckMiuiUpload extends BaseHook {
             public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
                 MethodData methodData = bridge.findMethod(FindMethod.create()
                     .matcher(MethodMatcher.create()
-                        .declaredClass(mNetworkUtil)
+                        .usingStrings("isNetworkConnected exception")
                         .paramCount(0)
                         .returnType(boolean.class)
                     )).singleOrNull();
@@ -241,4 +227,3 @@ public class FuckMiuiUpload extends BaseHook {
         }*/
     }
 }
-
