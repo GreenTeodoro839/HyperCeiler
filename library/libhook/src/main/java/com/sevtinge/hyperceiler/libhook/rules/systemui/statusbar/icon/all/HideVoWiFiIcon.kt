@@ -21,8 +21,8 @@ package com.sevtinge.hyperceiler.libhook.rules.systemui.statusbar.icon.all
 import com.sevtinge.hyperceiler.common.utils.PrefsBridge
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.setBooleanField
-import io.github.lingqiqi5211.ezhooktool.core.loadClass
-import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createHook
+import io.github.lingqiqi5211.ezhooktool.core.findMethod
+import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createAfterHook
 
 object HideVoWiFiIcon : BaseHook() {
     private val hideVoWifi by lazy {
@@ -33,11 +33,13 @@ object HideVoWiFiIcon : BaseHook() {
     }
 
     override fun init() {
-        loadClass($$"com.miui.interfaces.IOperatorCustomizedPolicy$OperatorConfig").constructors[0].createHook {
-            after {
-                it.thisObject.setBooleanField("hideVowifi", hideVoWifi)
-                it.thisObject.setBooleanField("hideVolte", hideVolte)
-            }
+        val operatorPolicyClass =
+            findClassIfExists("com.android.systemui.MiuiOperatorCustomizedPolicy", getClassLoader())
+                ?: return
+        operatorPolicyClass.findMethod { name("getMiuiOperatorConfig") }.createAfterHook { param ->
+            val operatorConfig = param.result ?: return@createAfterHook
+            operatorConfig.setBooleanField("hideVowifi", hideVoWifi)
+            operatorConfig.setBooleanField("hideVolte", hideVolte)
         }
     }
 }
