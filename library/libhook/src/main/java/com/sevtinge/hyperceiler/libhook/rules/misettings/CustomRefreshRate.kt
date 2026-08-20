@@ -34,7 +34,11 @@ object CustomRefreshRate : BaseHook() {
         requiredMember("CustomRefreshRate") {
             it.findMethod {
                 matcher {
+                    declaredClass = "com.xiaomi.misettings.display.RefreshRate.NewRefreshRateFragment"
+                    name = "B"
                     addEqString("btn_preferce_category")
+                    paramTypes = listOf("boolean")
+                    returnType = "void"
                 }
             }.single()
         }
@@ -53,4 +57,3 @@ object CustomRefreshRate : BaseHook() {
         }.apply { isAccessible = true }.set(null, true)
     }
 }
-
