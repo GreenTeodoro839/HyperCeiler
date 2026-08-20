@@ -20,8 +20,9 @@
 package com.sevtinge.hyperceiler.libhook.rules.camera;
 
 import android.graphics.Color;
+import android.graphics.Bitmap;
+import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 
 import com.sevtinge.hyperceiler.libhook.base.BaseHook;
@@ -48,7 +49,6 @@ import io.github.lingqiqi5211.ezhooktool.xposed.java.IMethodHook;
 public class BlackLeica extends BaseHook {
     private Class<?> mTextColorMakerClazz;
     private Method mWaterMakerLeicaMethod;
-    private Class<?> mDescStringColorMakerClazz;
     private Method mTextPainterMethod;
     private Method mTextColorMakerMethod;
     private Field mDescStringColorField;
@@ -66,63 +66,23 @@ public class BlackLeica extends BaseHook {
             public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
                 ClassData clazzData = bridge.findClass(FindClass.create()
                         .matcher(ClassMatcher.create()
-                                .usingStrings("get(ColorSpace.Named.SRGB)", "bitmap")
+                                .usingStrings("get(ColorSpace.Named.SRGB)")
                         )).singleOrNull();
                 return clazzData;
             }
         });
 
-        mWaterMakerLeicaMethod = optionalMember("WaterMakerLeicaNew", new IDexKit() {
+        mWaterMakerLeicaMethod = requiredMember("WaterMakerLeica", new IDexKit() {
             @Override
             public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
                 MethodData methodData = bridge.findMethod(FindMethod.create()
                     .matcher(MethodMatcher.create()
-                        .usingStrings("deviceNameLengthType")
-                        .returnType(mTextColorMakerClazz)
+                        .usingStrings("deviceNameLengthType: ")
+                        .returnType(Bitmap.class)
                     )).singleOrNull();
                 return methodData;
             }
         });
-        if (mWaterMakerLeicaMethod == null) {
-            mWaterMakerLeicaMethod = requiredMember("WaterMakerLeica", new IDexKit() {
-                @Override
-                public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
-                    MethodData methodData = bridge.findMethod(FindMethod.create()
-                        .matcher(MethodMatcher.create()
-                            .paramTypes(int.class, int.class, float.class, String.class, String.class, String.class, boolean.class, String.class, boolean.class, Drawable.class)
-                        )).singleOrNull();
-                    return methodData;
-                }
-            });
-        }
-
-        mDescStringColorMakerClazz = optionalMember("DescStringColorMakerClazzNew", new IDexKit() {
-            @Override
-            public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
-                ClassData clazzData = bridge.findClass(FindClass.create()
-                    .matcher(ClassMatcher.create()
-                        .addMethod(MethodMatcher.create()
-                            .usingStrings("deviceNameLengthType")
-                            .returnType(mTextColorMakerClazz)
-                        )
-                    )).singleOrNull();
-                return clazzData;
-            }
-        });
-        if (mDescStringColorMakerClazz == null) {
-            mDescStringColorMakerClazz = requiredMember("DescStringColorMakerClazz", new IDexKit() {
-                @Override
-                public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
-                    ClassData clazzData = bridge.findClass(FindClass.create()
-                        .matcher(ClassMatcher.create()
-                            .addMethod(MethodMatcher.create()
-                                .paramTypes(int.class, int.class, float.class, String.class, String.class, String.class, boolean.class, String.class, boolean.class, Drawable.class)
-                            )
-                        )).singleOrNull();
-                    return clazzData;
-                }
-            });
-        }
 
         // Class<?> clazz1 = method1.getClass();
         mTextPainterMethod = requiredMember("TextPainter", new IDexKit() {
@@ -130,7 +90,7 @@ public class BlackLeica extends BaseHook {
             public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
                 MethodData methodData = bridge.findMethod(FindMethod.create()
                         .matcher(MethodMatcher.create()
-                                .paramTypes(Typeface.class, float.class, int.class)
+                                .paramTypes(Typeface.class, float.class, int.class, Paint.Align.class, float.class)
                                 .returnType(TextPaint.class)
                         )).singleOrNull();
                 return methodData;
@@ -151,11 +111,12 @@ public class BlackLeica extends BaseHook {
         mDescStringColorField = requiredMember("DescStringColor", new IDexKit() {
             @Override
             public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
+                // 权宜之计：该颜色字段没有稳定语义特征；混淆名已在当前真实 dex 中核实，宿主更新后可能失效。
                 FieldData fieldData = bridge.findField(FindField.create()
                         .matcher(FieldMatcher.create()
-                                .declaredClass(mDescStringColorMakerClazz)
+                                .declaredClass("mu.b")
+                                .name("a")
                                 .type(int.class)
-                                .addReadMethod(MethodMatcher.create().name(mWaterMakerLeicaMethod.getName()))
                         )).singleOrNull();
                 return fieldData;
             }
