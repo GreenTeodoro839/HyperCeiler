@@ -29,6 +29,7 @@
 
         <Preference
             android:fragment="com.sevtinge.hyperceiler.hooker.systemui.statusbar.FocusNotificationLyricsSettings"
+            android:key="prefs_key_system_ui_status_bar_focus_lyrics"
             android:title="@string/system_ui_statusbar_music_title" />
 
     </PreferenceCategory>

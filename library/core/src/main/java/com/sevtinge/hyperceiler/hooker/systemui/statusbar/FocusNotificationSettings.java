@@ -33,6 +33,7 @@ import com.sevtinge.hyperceiler.libhook.utils.hookapi.miuiStringToast.MiuiString
 public class FocusNotificationSettings extends DashboardFragment {
 
     Preference mIslandMediaCard;
+    Preference mFocusLyrics;
     PreferenceCategory mStrongToastCategory;
     Preference mShortToast;
     Preference mLongToast;
@@ -45,6 +46,7 @@ public class FocusNotificationSettings extends DashboardFragment {
     @Override
     public void initPrefs() {
         mIslandMediaCard = findPreference("prefs_key_system_ui_status_bar_island_media_card");
+        mFocusLyrics = findPreference("prefs_key_system_ui_status_bar_focus_lyrics");
         mStrongToastCategory = findPreference("prefs_key_system_ui_status_bar_strong_toast_category");
         mShortToast = findPreference("prefs_key_system_ui_status_bar_strong_toast_test_short_text");
         mLongToast = findPreference("prefs_key_system_ui_status_bar_strong_toast_test_long_text");
@@ -52,6 +54,7 @@ public class FocusNotificationSettings extends DashboardFragment {
         if (isMoreHyperOSVersion(4f)) {
             setPreVisible(mStrongToastCategory, false);
         }
+        setPreVisible(mFocusLyrics, false);
 
         if (isMoreSmallVersion(200, 2f)) {
             setFuncHint(mShortToast, 1);
