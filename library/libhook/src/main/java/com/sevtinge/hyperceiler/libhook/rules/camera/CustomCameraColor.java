@@ -24,21 +24,19 @@ import com.sevtinge.hyperceiler.libhook.base.BaseHook;
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.dexkit.IDexKit;
 
 import org.luckypray.dexkit.DexKitBridge;
-import org.luckypray.dexkit.query.FindField;
 import org.luckypray.dexkit.query.FindMethod;
-import org.luckypray.dexkit.query.matchers.FieldMatcher;
 import org.luckypray.dexkit.query.matchers.MethodMatcher;
-import org.luckypray.dexkit.result.FieldData;
 import org.luckypray.dexkit.result.MethodData;
 import org.luckypray.dexkit.result.base.BaseData;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import io.github.lingqiqi5211.ezhooktool.xposed.common.HookParam;
+import io.github.lingqiqi5211.ezhooktool.xposed.java.IMethodHook;
+
 public class CustomCameraColor extends BaseHook {
     private Method mCameraColorGetterMethod;
-    private Field mCameraColorField;
 
     @Override
     protected boolean useDexKit() {
@@ -52,11 +50,8 @@ public class CustomCameraColor extends BaseHook {
             public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
                 MethodData methodData = bridge.findMethod(FindMethod.create()
                         .matcher(MethodMatcher.create()
-                                .addCaller(MethodMatcher.create().declaredClass("com.android.camera.fragment.FragmentMasterFilter"))
                                 .addCaller(MethodMatcher.create().declaredClass("com.android.camera.customization.BGTintTextView"))
-                                .addCaller(MethodMatcher.create().declaredClass("com.android.camera.fragment.FragmentBottomPopupTips"))
-                                .addCaller(MethodMatcher.create().declaredClass("com.android.camera.fragment.aiwatermark.holder.WatermarkHolder"))
-                                .addCaller(MethodMatcher.create().declaredClass("com.android.camera2.compat.theme.common.MiThemeOperationBottom"))
+                                .usingStrings("pref_tint_color")
                                 .modifiers(Modifier.STATIC)
                                 .returnType(int.class)
                                 .paramCount(0)
@@ -64,22 +59,16 @@ public class CustomCameraColor extends BaseHook {
                 return methodData;
             }
         });
-        mCameraColorField = requiredMember("CameraColor", new IDexKit() {
-            @Override
-            public BaseData dexkit(DexKitBridge bridge) throws ReflectiveOperationException {
-                FieldData fieldData = bridge.findField(FindField.create()
-                        .matcher(FieldMatcher.create()
-                                .declaredClass(mCameraColorGetterMethod.getDeclaringClass())
-                                .type(int.class)
-                        )).singleOrNull();
-                return fieldData;
-            }
-        });
         return true;
     }
 
     @Override
     public void init() {
-        com.sevtinge.hyperceiler.libhook.base.BaseHook.setStaticIntField(mCameraColorField.getDeclaringClass(), mCameraColorField.getName(), PrefsBridge.getInt("camera_custom_theme_color_picker", -2025677));
+        hookMethod(mCameraColorGetterMethod, new IMethodHook() {
+            @Override
+            public void before(HookParam param) {
+                param.setResult(PrefsBridge.getInt("camera_custom_theme_color_picker", -2025677));
+            }
+        });
     }
 }
