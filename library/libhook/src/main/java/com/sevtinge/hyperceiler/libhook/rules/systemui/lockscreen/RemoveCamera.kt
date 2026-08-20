@@ -23,10 +23,7 @@ import android.widget.LinearLayout
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.systemui.Keyguard.keyguardBottomAreaInjector
 import io.github.lingqiqi5211.ezhooktool.core.findAllMethods
-import io.github.lingqiqi5211.ezhooktool.core.findMethod
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getObjectFieldOrNullAs
-import io.github.lingqiqi5211.ezhooktool.core.loadClassOrNull
-import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createHook
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createHooks
 
 object RemoveCamera : BaseHook() {
@@ -42,13 +39,5 @@ object RemoveCamera : BaseHook() {
                 right.visibility = View.GONE
             }
         }
-
-        // 屏蔽滑动撞墙动画
-        loadClassOrNull("com.android.keyguard.KeyguardMoveRightController")!!.findMethod { name("onTouchMove"); paramCount(2) }.createHook {
-                returnConstant(false)
-            }
-        loadClassOrNull("com.android.keyguard.KeyguardMoveRightController")!!.findMethod { name("reset") }.createHook {
-                returnConstant(null)
-            }
     }
 }
