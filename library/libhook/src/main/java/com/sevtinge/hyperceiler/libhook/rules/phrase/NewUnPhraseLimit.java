@@ -30,6 +30,7 @@ import android.widget.EditText;
 import com.sevtinge.hyperceiler.libhook.base.BaseHook;
 import io.github.lingqiqi5211.ezhooktool.xposed.java.IMethodHook;
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.dexkit.IDexKit;
+import com.sevtinge.hyperceiler.libhook.utils.api.FinalFieldUtils;
 
 import org.json.JSONArray;
 import org.luckypray.dexkit.DexKitBridge;
@@ -46,7 +47,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.lingqiqi5211.ezhooktool.core.java.Fields;
 import io.github.lingqiqi5211.ezhooktool.xposed.common.HookParam;
 
 public class NewUnPhraseLimit extends BaseHook {
@@ -172,7 +172,7 @@ public class NewUnPhraseLimit extends BaseHook {
 
     private void setPhraseListSize(Class<?> inputMethodUtil) {
         try {
-            Fields.setStaticObjectField(inputMethodUtil, "sPhraseListSize", 0);
+            FinalFieldUtils.setStaticField(inputMethodUtil, "sPhraseListSize", 0);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }

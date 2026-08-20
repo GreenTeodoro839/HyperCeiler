@@ -21,7 +21,7 @@ package com.sevtinge.hyperceiler.libhook.rules.mediaeditor
 import com.sevtinge.hyperceiler.common.log.XposedLog
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.LazyClass.AndroidBuildCls
-import io.github.lingqiqi5211.ezhooktool.xposed.dsl.setStaticObjectField
+import com.sevtinge.hyperceiler.libhook.utils.api.FinalFieldUtils
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createHook
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -72,7 +72,7 @@ object UnlockLeicaFilter : BaseHook() {
             XposedLog.d(TAG, lpparam.packageName, "New Leica name is $leicaNew") // debug 用
             leicaNew!!.createHook {
                 before {
-                    AndroidBuildCls.setStaticObjectField("DEVICE", "aurora")
+                    FinalFieldUtils.setStaticField(AndroidBuildCls, "DEVICE", "aurora")
                 }
             }
         }

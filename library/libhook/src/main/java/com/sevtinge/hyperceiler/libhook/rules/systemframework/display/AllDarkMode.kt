@@ -22,10 +22,10 @@ import android.content.pm.ApplicationInfo
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
 import com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.Miui.IS_INTERNATIONAL_BUILD
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.LazyClass.clazzMiuiBuild
+import com.sevtinge.hyperceiler.libhook.utils.api.FinalFieldUtils
 import io.github.lingqiqi5211.ezhooktool.core.callMethod
 import io.github.lingqiqi5211.ezhooktool.core.findAllMethods
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createHooks
-import io.github.lingqiqi5211.ezhooktool.xposed.dsl.setStaticBooleanField
 
 // from SetoHook by SetoSkins
 class AllDarkMode : BaseHook() {
@@ -37,10 +37,11 @@ class AllDarkMode : BaseHook() {
         clazzForceDarkAppListManager.findAllMethods { name("getDarkModeAppList") }
             .createHooks {
                 before {
-                    clazzMiuiBuild.setStaticBooleanField("IS_INTERNATIONAL_BUILD", true)
+                    FinalFieldUtils.setStaticField(clazzMiuiBuild, "IS_INTERNATIONAL_BUILD", true)
                 }
                 after {
-                    clazzMiuiBuild.setStaticBooleanField(
+                    FinalFieldUtils.setStaticField(
+                        clazzMiuiBuild,
                         "IS_INTERNATIONAL_BUILD",
                         IS_INTERNATIONAL_BUILD
                     )

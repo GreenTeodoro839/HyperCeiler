@@ -21,8 +21,8 @@ package com.sevtinge.hyperceiler.libhook.rules.screenshot
 import android.os.Build
 import com.sevtinge.hyperceiler.common.utils.PrefsBridge
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
+import com.sevtinge.hyperceiler.libhook.utils.api.FinalFieldUtils
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
-import io.github.lingqiqi5211.ezhooktool.core.java.Fields
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createHook
 
 object DeviceShellCustomize : BaseHook() {
@@ -37,11 +37,11 @@ object DeviceShellCustomize : BaseHook() {
                      if (!this@DeviceShellCustomize::device.isInitialized) {
                          device = Build.DEVICE
                      }
-                     Fields.setStaticObjectField(findClass("android.os.Build"), "DEVICE", deviceS)
+                     FinalFieldUtils.setStaticField(findClass("android.os.Build"), "DEVICE", deviceS)
                  }
 
                  after {
-                     Fields.setStaticObjectField(findClass("android.os.Build"), "DEVICE", device)
+                     FinalFieldUtils.setStaticField(findClass("android.os.Build"), "DEVICE", device)
                  }
              }
      }

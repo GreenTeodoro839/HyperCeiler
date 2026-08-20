@@ -23,9 +23,9 @@ import android.text.TextUtils
 import com.sevtinge.hyperceiler.common.log.XposedLog
 import com.sevtinge.hyperceiler.common.utils.PrefsBridge
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
+import com.sevtinge.hyperceiler.libhook.utils.api.FinalFieldUtils
 import io.github.lingqiqi5211.ezhooktool.xposed.java.IMethodHook
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getObjectField
-import io.github.lingqiqi5211.ezhooktool.xposed.dsl.setStaticObjectField
 import io.github.lingqiqi5211.ezhooktool.core.java.Constructors
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
 import io.github.lingqiqi5211.ezhooktool.xposed.common.HookParam
@@ -86,7 +86,8 @@ object VersionCodeNew : BaseHook() {
         // 原始修改版本名
         findClassIfExists("com.android.updater.Application").findMethod { name("onCreate") }.createBeforeHook {
                 if (!TextUtils.isEmpty(mOldVersionCode)) {
-                    Build.VERSION::class.java.setStaticObjectField(
+                    FinalFieldUtils.setStaticField(
+                        Build.VERSION::class.java,
                         "INCREMENTAL",
                         "$mVersionCode"
                     )

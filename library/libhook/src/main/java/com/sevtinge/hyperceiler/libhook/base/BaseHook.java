@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sevtinge.hyperceiler.common.log.XposedLog;
+import com.sevtinge.hyperceiler.libhook.utils.api.FinalFieldUtils;
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.dexkit.DexKit;
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.dexkit.IDexKit;
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.dexkit.IDexKitList;
@@ -467,6 +468,7 @@ public abstract class BaseHook {
      * 设置静态字段值
      */
     public static void setStaticObjectField(Class<?> clazz, String fieldName, Object value) {
+        if (FinalFieldUtils.trySetFinalStaticField(clazz, fieldName, value)) return;
         Fields.setStaticObjectField(clazz, fieldName, value);
     }
 
@@ -507,6 +509,7 @@ public abstract class BaseHook {
     }
 
     public static void setStaticBooleanField(Class<?> clazz, String fieldName, boolean value) {
+        if (FinalFieldUtils.trySetFinalStaticField(clazz, fieldName, value)) return;
         Fields.setStaticBooleanField(clazz, fieldName, value);
     }
 
@@ -515,6 +518,7 @@ public abstract class BaseHook {
     }
 
     public static void setStaticIntField(Class<?> clazz, String fieldName, int value) {
+        if (FinalFieldUtils.trySetFinalStaticField(clazz, fieldName, value)) return;
         Fields.setStaticIntField(clazz, fieldName, value);
     }
 

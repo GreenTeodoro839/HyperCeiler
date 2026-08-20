@@ -23,11 +23,11 @@ import com.sevtinge.hyperceiler.common.utils.PrefsBridge
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.LazyClass.AndroidBuildCls
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.tool.AppsTool.getPackageVersionCode
+import com.sevtinge.hyperceiler.libhook.utils.api.FinalFieldUtils
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
 import io.github.lingqiqi5211.ezhooktool.core.findMethodOrNull
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createBeforeHook
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createHook
-import io.github.lingqiqi5211.ezhooktool.xposed.dsl.setStaticObjectField
 import org.json.JSONObject
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -196,7 +196,8 @@ object UnlockCustomPhotoFrames : BaseHook() {
             // 1.10.0.0.6 新增 Xiaomi 15 Ultra 独占定制画框
             // 2.4.0.1.2 取消独占状态
             methodB?.createBeforeHook {
-                AndroidBuildCls.setStaticObjectField(
+                FinalFieldUtils.setStaticField(
+                    AndroidBuildCls,
                     "DEVICE",
                     "xuanyuan"
                 )
