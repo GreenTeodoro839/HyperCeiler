@@ -18,12 +18,14 @@
  */
 package com.sevtinge.hyperceiler.libhook.utils.hookapi
 
+import com.sevtinge.hyperceiler.common.log.XposedLog
 import com.sevtinge.hyperceiler.libhook.utils.api.DeviceHelper.System.isMoreAndroidVersion
 import io.github.lingqiqi5211.ezhooktool.core.callMethod
 import io.github.lingqiqi5211.ezhooktool.core.callStaticMethod
-import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getFirstFieldByExactType
 
 object StateFlowHelper {
+    private const val TAG = "StateFlowHelper"
+
      private val STATE_FLOW by lazy {
         com.sevtinge.hyperceiler.libhook.base.BaseHook.findClass("kotlinx.coroutines.flow.StateFlow")
     }
@@ -62,17 +64,35 @@ object StateFlowHelper {
     fun setStateFlowValue(stateFlow: Any?, value: Any?) {
         stateFlow ?: return
 
-        when (stateFlow::class.java.simpleName) {
-            "ReadonlyStateFlow" -> {
-                if (isMoreAndroidVersion(36)) {
-                    stateFlow.getFirstFieldByExactType(MUTABLE_STATE_FLOW)
-                } else {
-                    stateFlow.getFirstFieldByExactType(STATE_FLOW)
-                }
-            }
+        val target = when (stateFlow::class.java.simpleName) {
+            "ReadonlyStateFlow" -> findMutableDelegate(stateFlow)
             "StateFlowImpl" -> stateFlow
             else -> null
-        }?.callMethod("setValue", value)
+        } ?: return
+
+        runCatching { target.callMethod("setValue", value) }.onFailure {
+            XposedLog.e(TAG, "failed to set value on ${target::class.java.name}: $it")
+        }
+    }
+
+    /**
+     * ReadonlyStateFlow 只是个委托壳，真正可写的 flow 在它的委托字段里。
+     * 该字段的声明类型各版本不一样（MutableStateFlow / StateFlow），R8 还会把字段名混淆掉，
+     * 所以直接按字段的实际值找，不依赖名字和声明类型。
+     *
+     * 这个方法跑在 SystemUI 的 flow collector 回调里，**一旦抛出去就是 SystemUI 崩溃循环**，
+     * 所以找不到就返回 null，绝不往外抛。
+     */
+    private fun findMutableDelegate(stateFlow: Any): Any? {
+        for (field in stateFlow::class.java.declaredFields) {
+            val delegate = runCatching {
+                field.isAccessible = true
+                field.get(stateFlow)
+            }.getOrNull() ?: continue
+            if (MUTABLE_STATE_FLOW.isInstance(delegate)) return delegate
+        }
+        XposedLog.e(TAG, "no mutable delegate in ${stateFlow::class.java.name}")
+        return null
     }
 
     @JvmStatic
