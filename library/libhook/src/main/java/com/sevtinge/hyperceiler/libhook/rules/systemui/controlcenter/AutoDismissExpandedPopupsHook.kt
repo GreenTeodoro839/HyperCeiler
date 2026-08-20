@@ -76,7 +76,12 @@ object AutoDismissExpandedPopupsHook : BaseHook() {
 
         loadClass("com.android.systemui.statusbar.phone.StatusBarNotificationPresenter").findAllMethods { name("onExpandClicked") }.createHooks {
                 after {
-                    val expanded = it.args[1] as Boolean
+                    // Android 17: onExpandClicked(row, entryAdapter, expanded)
+                    val expanded = if (isMoreAndroidVersion(36)) {
+                        it.args[2] as Boolean
+                    } else {
+                        it.args[1] as Boolean
+                    }
                     val mKeyguardStateController = it.thisObject.getObjectField("mKeyguardStateController") ?: return@after
                     val mShowing =
                         mKeyguardStateController.getBooleanField("mShowing")
