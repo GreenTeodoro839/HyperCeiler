@@ -19,15 +19,17 @@
 package com.sevtinge.hyperceiler.libhook.rules.systemui.controlcenter
 
 import android.annotation.SuppressLint
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.sevtinge.hyperceiler.common.utils.PrefsBridge
 import com.sevtinge.hyperceiler.libhook.base.BaseHook
+import com.sevtinge.hyperceiler.libhook.utils.api.DisplayUtils.dp2px
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.WeatherView
 import com.sevtinge.hyperceiler.libhook.utils.hookapi.tool.getIdByName
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
-import io.github.lingqiqi5211.ezhooktool.xposed.dsl.setObjectField
 import io.github.lingqiqi5211.ezhooktool.core.loadClass
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createAfterHook
 
@@ -43,26 +45,10 @@ object OldWeather : BaseHook() {
         loadClass("com.android.systemui.qs.MiuiQSHeaderView").findMethod { name("onFinishInflate") }.createAfterHook {
                 val viewGroup = it.thisObject as ViewGroup
                 val context = viewGroup.context
-                val layoutParam =
-                    loadClass($$"androidx.constraintlayout.widget.ConstraintLayout$LayoutParams")
-                        .getConstructor(Int::class.java, Int::class.java)
-                        .newInstance(
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                        ) as ViewGroup.MarginLayoutParams
-
-                layoutParam.setObjectField(
-                    "endToStart",
+                val shortcut = viewGroup.findViewById<View>(
                     context.getIdByName("notification_shade_shortcut")
-                )
-                layoutParam.setObjectField(
-                    "topToTop",
-                    context.getIdByName("notification_shade_shortcut")
-                )
-                layoutParam.setObjectField(
-                    "bottomToBottom",
-                    context.getIdByName("notification_shade_shortcut")
-                )
+                ) ?: return@createAfterHook
+                val parent = shortcut.parent as ViewGroup
 
                 mWeatherView = WeatherView(context, isDisplayCity).apply {
                     id = View.generateViewId()
@@ -72,13 +58,19 @@ object OldWeather : BaseHook() {
                             "style"
                         )
                     )
-                    layoutParams = layoutParam
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        gravity = Gravity.CENTER_VERTICAL
+                        marginEnd = dp2px(5f)
+                    }
 
                     setOnClickListener {
                         startWeatherApp()
                     }
                 }
-                viewGroup.addView(mWeatherView)
+                parent.addView(mWeatherView, parent.indexOfChild(shortcut))
             }
     }
 }
