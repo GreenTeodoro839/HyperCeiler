@@ -21,10 +21,8 @@ package com.sevtinge.hyperceiler.libhook.rules.systemui.controlcenter
 import android.annotation.SuppressLint
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.IntDef
 import com.sevtinge.hyperceiler.common.utils.PrefsBridge
@@ -40,6 +38,7 @@ import com.sevtinge.hyperceiler.libhook.utils.hookapi.tool.getIdByName
 import io.github.lingqiqi5211.ezhooktool.core.findMethod
 import io.github.lingqiqi5211.ezhooktool.core.findMethodOrNull
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.getObjectFieldAs
+import io.github.lingqiqi5211.ezhooktool.xposed.dsl.setObjectField
 import io.github.lingqiqi5211.ezhooktool.core.loadClass
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createAfterHook
 import io.github.lingqiqi5211.ezhooktool.xposed.dsl.createBeforeHook
@@ -231,15 +230,20 @@ object NotificationWeather : BaseHook() {
             setTextAppearance(
                 context.getIdByName(appearance, "style")
             )
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                gravity = Gravity.CENTER_VERTICAL
-                marginStart = resources.getDimensionPixelSize(
-                    context.getDimenByName("notification_panel_time_date_space")
-                ) + dp2px(5f)
-            }
+            layoutParams =
+                loadClass($$"androidx.constraintlayout.widget.ConstraintLayout$LayoutParams")
+                    .getConstructor(Int::class.java, Int::class.java)
+                    .newInstance(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).let { it as ViewGroup.MarginLayoutParams }.apply {
+                        setObjectField("startToEnd", view.id)
+                        setObjectField("topToTop", view.id)
+                        setObjectField("bottomToBottom", view.id)
+                        marginStart = resources.getDimensionPixelSize(
+                            context.getDimenByName("notification_panel_time_date_space")
+                        ) + dp2px(5f)
+                    }
 
             setOnClickListener {
                 startWeatherApp()
